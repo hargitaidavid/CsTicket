@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+    <class name="csillag.model.Ticket" table="TICKET">
+        <id name="id" column="TICKET_ID">
+            <generator class="native"/>
+        </id>
+        <property name="cim"/>
+        <property name="leiras"/>
+        <property name="fontossag"/>
+        <property name="allapot"/>
+        <property name="letrehozva" type="timestamp"/>
+        
+        <many-to-one name="felelos" class="csillag.model.Felhasznalo" column="FELHASZNALO_ID"/>
+        <many-to-one name="merfoldko" class="csillag.model.Merfoldko" column="MERFOLDKO_ID"/>
+        
+        <set name="csatolmanyok" cascade="all">
+            <key column="TICKET_ID"/>
+            <one-to-many class="csillag.model.Csatolmany"/>
+        </set>
+    </class>
+
+</hibernate-mapping>

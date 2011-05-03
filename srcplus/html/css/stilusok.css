@@ -1,0 +1,16 @@
+		header {padding-top:25px; border-bottom:1px solid #ccc; padding-bottom:20px;}
+		header .logo {font-size:3.52em;}
+		header #belepesLink {position: relative;right: 15px;text-align:right;}
+		header nav ul li {float:left; margin-top:12px;}
+		header nav ul li a {display:block; padding:5px 15px; border-right:1px solid #eee; font-size:1.52em; font-family:Georgia, "Times New Roman", Times, serif; text-decoration:none;}
+		header nav ul li a:hover {background-color:#eee; border-right:1px solid #ccc; text-shadow:-1px -1px 0px #fff;}
+		header nav ul li.last a {border-right:none;}
+		
+		#styled {margin-top:20px;}
+		
+		.group {padding:5px; background-color:#eee; border:1px dashed #ccc; list-style:none; margin:0px; margin-bottom:5px;}
+		.group a {font-size:1.2em;}
+		.group p {margin-bottom:5px;}
+		.group li {margin-bottom:5px;}
+
+		h2 {border-bottom:1px dashed #ccc; margin-top:15px;}

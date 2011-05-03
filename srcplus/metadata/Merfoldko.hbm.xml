@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+    <class name="csillag.model.Merfoldko" table="MERFOLDKO">
+        <id name="id" column="MERFOLDKO_ID">
+            <generator class="native"/>
+        </id>
+        <property name="nev"/>
+        <property name="hatarido" type="date"/>
+        
+        <set name="ticketek" cascade="all">
+            <key column="MERFOLDKO_ID"/>
+            <one-to-many class="csillag.model.Ticket"/>
+        </set>
+    </class>
+
+</hibernate-mapping>

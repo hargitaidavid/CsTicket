@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="CsillagTicketkezelo" default="war">
+	<!-- Globális jellemzők, pl. könyvtárnevek -->
+	<property name="bin" location="binary"/>
+	<property name="src" location="source"/>
+	<property name="lib"  location="lib"/>
+
+	<property name="srcplus" location="srcplus"/>
+	<property name="contrib" location="contrib"/>
+	<property name="install" location="install"/>
+	
+	<property name="build" location="build"/>
+	<property name="dist"  location="dist"/>
+
+	<property name="appname"  location="csticket"/>
+	
+	<!-- Összetett feladatok definiálása pl. init, compile, dist, clean -->
+	<target name="init" description="Projekt inicializálás">    
+		<mkdir dir="${build}"/>
+	</target>
+
+	<target name="compile" depends="init" description="Java forráskód fordítás ${src}-ből ${build}-be">
+		
+ 		<javac srcdir="${src}" destdir="${build}">
+		<classpath>
+		    <fileset dir="lib">
+		        <include name="**/*.jar"/>
+            </fileset>
+		</classpath>
+		</javac>
+	</target>
+	
+	<target name="war" depends="compile" description="Disztribúció (terjeszthető változat) készítés a ${dist} könyvtárba" >
+		<mkdir dir="${dist}"/>
+		<war destfile="${dist}/csticket.war" webxml="${srcplus}/metadata/web.xml">
+			<fileset dir="${srcplus}/html"/>
+			<classes dir="${build}"/>
+			<lib dir="${lib}"/>
+			
+			<!-- A hibarnate config, map filejai is a class-ok melle kell, hogy keruljenek! -->
+			<classes file="${srcplus}/metadata/hibernate.cfg.xml"/>
+			<classes dir="${srcplus}/metadata" includes="**/*.hbm.xml"/>
+		</war>
+	</target>
+
+	<target name="tomcat-run">
+		<!--<exec executable="script/run.bat" spawn="true"/>-->
+		<exec executable="script/run.sh" spawn="true"/>
+	</target>
+
+	<target name="tomcat-install-all" depends="tomcat-install-only-tomcat, tomcat-install-only-war">
+	</target>
+
+	<target name="tomcat-install-only-tomcat">
+		<mkdir dir="${install}"/>
+		<unzip src="${contrib}/apache-tomcat-7.0.11.zip" dest="${install}"/>  
+		<copy file="${lib}/hsqldb.jar" todir="${install}/apache-tomcat-7.0.11/lib/"/>
+	</target>
+	
+	<target name="tomcat-install-only-war" depends="war">
+		<copy file="${dist}/csticket.war" todir="${install}/apache-tomcat-7.0.11/webapps/"/>
+	</target>
+
+	<target name="tomcat-deleteall" description="Törli a ${build} és a ${dist} könyvtárakat." >    
+		<delete dir="${build}"/>
+		<delete dir="${dist}"/>
+		<delete dir="${install}"/>
+	</target>
+
+	<target name="tomcat-clean-tomcat-and-dist-build" description="törli az installált web applikációt" >    
+		<delete dir="${build}"/>
+		<delete dir="${dist}"/>
+		<delete file="${install}/apache-tomcat-7.0.11/webapps/csticket.war"/>
+		<delete dir="${install}/apache-tomcat-7.0.11/webapps/csticket"/>
+	</target>
+
+	<target name="tomcat-redeploy-war" depends="tomcat-clean-tomcat-and-dist-build, tomcat-install-only-war" >    
+	</target>
+
+    <!-- Ez itt az adatbázis kezelésért felelős targetek -->
+	<target name="hsqldb-runserver">
+		<java classname="org.hsqldb.Server" fork="true">
+			<arg value="-database"/>
+			<arg value="mem:csillagdb"/>
+			<arg value="-dbname"/>
+			<arg value="csillag"/>
+			<classpath>
+			    <fileset dir="lib">
+			        <include name="**/*.jar"/>
+	            </fileset>
+			</classpath>			
+		</java>
+	</target>
+	
+
+	<target name="hsqldb-runmanager">
+		<java classname="org.hsqldb.util.DatabaseManager" fork="true">
+			<classpath>
+			    <fileset dir="lib">
+			        <include name="**/*.jar"/>
+	            </fileset>
+			</classpath>	
+		</java>
+	</target>
+
+	<target name="hsqldb-runmanagerswing">
+		<java classname="org.hsqldb.util.DatabaseManagerSwing" classpath="${classpath}" fork="true">
+			<classpath>
+			    <fileset dir="lib">
+			        <include name="**/*.jar"/>
+	            </fileset>
+			</classpath>
+		</java>
+	</target>
+</project>

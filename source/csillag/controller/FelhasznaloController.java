@@ -32,16 +32,27 @@ public class FelhasznaloController {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         
-        if (session.createQuery("select 1 from Felhasznalo where nev="+r.getParameter("nev")+" and jelszo="+r.getParameter("jelszo")).list().isEmpty())
+        boolean s = session.createQuery("from Felhasznalo where felhasznalonev = :nev and jelszo = :jelszo")
+        	.setParameter("nev", r.getParameter("nev"))
+        	.setParameter("jelszo", r.getParameter("jelszo"))
+        	.list()
+        	.isEmpty();
+        
+        Felhasznalo f;
+        
+        if( s )
         {
-        	return 0L;
+        	return new Long(0);
         }
         else
         {
+        	f = (Felhasznalo)session
+        	.createQuery("from Felhasznalo where felhasznalonev = :nev and jelszo = :jelszo")
+        	.setParameter("nev", r.getParameter("nev"))
+        	.setParameter("jelszo", r.getParameter("jelszo"))
+        	.uniqueResult();
         	
-        	Felhasznalo f = (Felhasznalo)session.createQuery("from Felhasznalo where nev="+r.getParameter("nev")+" and jelszo="+r.getParameter("jelszo")).uniqueResult();
-			return f.getId();
-			
+        	return f.getId();
 		}
 	}
 	

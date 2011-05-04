@@ -54,26 +54,28 @@
 			<div class="col_10 col">
 			
 		<%
-		if (request.getParameter("nev") != null)
+		if (request.getParameter("nev") != null && request.getParameter("jelszo") != null)
 		{
 			Long id = usr.azonositva(request);
-			if( id == 0L )
+			if( id.intValue() > 0 )
 			{
 				Felhasznalo f = usr.getObject(id);
 		 	%>
 		
 			<h1>Üdv, <%= f.getNev() %></h1>
 		
-		<%
+			<%
 			}
 			else
-			{%>
-			<h1>Helytelen felhasználónév vagy jelszó!</h1>
+			{ %>
+			
+			<h1>Helytelen felhasználónév vagy jelszó! <%= id.intValue() %></h1>
+			
 			<%} 
 		} else {
 			%>
 			
-			<h1 class="fontface">Belépés</h1>
+			<h1>Belépés</h1>
 			
 			<form class="col col_7" action="belepes.jsp" method="post">
 	    		<fieldset>	
@@ -85,7 +87,7 @@
 	            	
 	            	<div>
 	            		<label>Jelszó</label>
-	                	<input type="text" name="jelszo" required="required" class="box_shadow" />
+	                	<input type="password" name="jelszo" required="required" class="box_shadow" />
 	            	</div>
 	            	
 	            	<input type="submit" value="Belépés" />

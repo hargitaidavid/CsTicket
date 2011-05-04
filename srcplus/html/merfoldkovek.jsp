@@ -1,54 +1,115 @@
-<!DOCTYPE html>
+<%@ page language="java" pageEncoding="utf-8" contentType="text/html;charset=utf-8"%><!DOCTYPE html>
 
 <html lang="hu-HU">
 	<head>
-		<meta charset="utf-8" />
-		<title>Csillag Ticketkezelő</title>
+		<meta charset="utf-8">
+		<title>Mérföldkövek - Csillag Ticketkezelő</title>
 		<meta name="author" content="Bognár Szabolcs" />
 		<meta name="author" content="Hargitai Dávid" />
-		<link rel="stylesheet" href="css/stilus.css" />
+		
+		<script src="js/modernizr-1.7.min.js"></script><!-- this is the javascript allowing html5 to run in older browsers -->
+
+	    <link rel="stylesheet" type="text/css" href="css/reset.css" media="screen" title="html5doctor.com Reset Stylesheet" />
+
+	    <!-- in the CSS3 stylesheet you will find examples of some great new features CSS has to offer -->
+	    <link rel="stylesheet" type="text/css" href="css/css3.css" media="screen" />
+
+	    <!-- general stylesheet contains some default styles, you do not need this, but it helps you keep a uniform style -->
+	    <link rel="stylesheet" type="text/css" href="css/general.css" media="screen" />
+
+	    <!-- grid's will help you keep your website appealing to your users, view 52framework.com website for documentation -->
+	    <link rel="stylesheet" type="text/css" href="css/grid.css" media="screen" />
+	    
+		<link rel="stylesheet" href="css/stilusok.css" />
+		<link rel="stylesheet" href="css/tabs.css" />
 	</head>
 	
 	<body>
 	
-		<jsp:useBean id="tckt" scope="session" class="csillag.controller.TicketController" />
-		<jsp:setProperty name="tckt" property="*" />
+		<jsp:useBean id="mrfldk" scope="session" class="csillag.controller.MerfoldkoController" />
+		<jsp:setProperty name="mrfldk" property="*" />
 		<%@ page import="java.util.*,csillag.model.*" %>
 		
-		<header>
-			<p id="brand">Csillag Ticketkezelő</p>
-			
-			<nav>
-				<a href="belepes.jsp" id="belepesLink">Belépés</a>
-				
-				<ul>
-					<li><a href="ujticket.jsp">Új ticket</a></li>
-					<li><a href="index.jsp" class="active">Ticketek</a></li>
-					<li><a href="merfoldkovek.jsp">Mérföldkövek</a></li>
-				</ul>
-			</nav>
-		</header>
+		<%
+		if( request.getParameter("nev") != null )
+		{
+			mrfldk.save(request);
+		}
+		%>
 		
-		<h1>Ticketek listája</h1>
-		<table>
-			<tr>
-				<th>Cím</th>
-				<th>Leírás</th>
-				<th>Fontosság</th>
-				<th>Állapot</th>
-				<th>Létrehozva</th>
-			</tr>
+		<div class="row">
+			<header>
+				<p class="logo col_7 col">Csillag Ticketkezelő</p>
 			
-		<% for(Object t : tckt.getOsszesTicket()) { %>
-			<tr>
-				<td><%= ((Ticket)t).getCim() %></td>
-				<td><%= ((Ticket)t).getLeiras() %></td>
-				<td><%= ((Ticket)t).getFontossag() %></td>
-				<td><%= ((Ticket)t).getAllapot() %></td>
-				<td><%= ((Ticket)t).getLetrehozva() %></td>
-			</tr>		
-		<% } %>
-		</ul>
+				<nav class="col_9 col">
+					<a href="belepes.jsp" class="col_9 col" id="belepesLink">Belépés</a>
+				
+					<ul>
+						<li><a href="ujticket.jsp">Új ticket</a></li>
+						<li><a href="index.jsp">Ticketek</a></li>
+						<li><a href="merfoldkovek.jsp" class="active">Mérföldkövek</a></li>
+					</ul>
+				</nav>
+			
+				 <div class="clear"></div>
+			</header>
+		</div>
+		
+		<section class="row">
+			<div class="col_10 col">
+			
+			<% if( request.getParameter("id") == null ) { %>
+			
+				<h1>Mérföldkövek listája</h1>
+				
+				
+				<table>
+					<tr>
+						<th>Név</th>
+						<th>Határidő</th>
+						<th>Ticketek</th>
+					</tr>
+			
+				<% for(Object m : mrfldk.getAllMilestones()) { %>
+					<tr>
+						<td><a href="merfoldkovek.jsp?id=<%= ((Merfoldko)m).getId() %>"><%= ((Merfoldko)m).getNev() %></a></td>
+						<td><%= mrfldk.getHatarido((Merfoldko)m, "yyyy-MM-dd") %></td>
+						<td><%= mrfldk.aktivTicketekSzama(((Merfoldko)m).getId()) %> aktív ticket<br>
+							<%= mrfldk.lezartTicketekSzama(((Merfoldko)m).getId()) %> lezárt ticket
+						</td>
+					</tr>		
+				<% } %>
+				</table>
+				
+			<% } else {
+				Merfoldko m = mrfldk.getObject(request.getParameter("id"));
+			%>
+			
+			<h1 class="fontface"><%= m.getNev() %> mérföldkő adatai</h1>
+			
+			<form class="col col_7" action="merfoldkovek.jsp" method="post">
+	    		<fieldset>	
+	        		<legend>Adatok</legend>
+	        		<input type="hidden" name="id" value="<%= m.getId() %>" />
+	            	<div>
+	            		<label>Név</label>
+	                	<input type="text" name="nev" value="<%= m.getNev() %>" required="required" class="box_shadow" />
+	            	</div>
+	            	<div>
+	            		<label>Határidő ("yyyy-MM-dd")</label>
+	            	    <input type="text" name="hatarido" value="<%= mrfldk.getHatarido((Merfoldko)m, "yyyy-MM-dd") %>" required="required" class="box_shadow" />
+	            	</div>
+
+	            	<input type="submit" value="Mentés" />
+	            	<a href="merfoldkovek.jsp?id=request.getParameter("id")&akcio=torles">Törlés</a>
+
+	        	</fieldset>
+	    	</form>
+			
+			<% } %>
+			</div>
+			
+		</section>
 			
 	
 	</body>

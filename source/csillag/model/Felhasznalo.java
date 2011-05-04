@@ -13,6 +13,7 @@ public class Felhasznalo {
 
 	public static final byte ADMIN = 1;
 	public static final byte MODERATOR = 2;
+	public static final byte FELHASZNALO = 3;
 	
 	private Long id;
 	private String felhasznalonev;

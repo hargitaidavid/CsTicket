@@ -3,7 +3,8 @@
  */
 package csillag.model;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 /**
  * @author hargitaidavid
@@ -17,8 +18,7 @@ public class Merfoldko {
 	private Set<Ticket> ticketek;
 	
 	public Merfoldko() {}
-	public Merfoldko(Long id, String nev, Date hatarido) {
-		this.id = id;
+	public Merfoldko(String nev, Date hatarido) {
 		this.nev = nev;
 		this.hatarido = hatarido;
 	}

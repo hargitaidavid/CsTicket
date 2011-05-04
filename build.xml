@@ -88,7 +88,7 @@
 			    <fileset dir="lib">
 			        <include name="**/*.jar"/>
 	            </fileset>
-			</classpath>			
+			</classpath>
 		</java>
 	</target>
 	

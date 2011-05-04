@@ -13,11 +13,9 @@ import csillag.util.HibernateUtil;
 import csillag.model.*;
 
 /**
- * Minta servlet az elso feladat megoldasahoz.
- * A feladat, hogy kezdeti adatokkal feltoltsuk a servlet segitsegevel az adatbazist.
- * Elotte viszont ellenoriznunk kell, hogy vannak-e mar benne adatok.
+ * Adatbázis feltöltése mintaadatokkal a kezdéshez
  *  
- * @author hXXXXXX
+ * @author Bognár Szabolcs, Hargitai Dávid
  */
 public class FrontServlet extends HttpServlet {
 
@@ -50,22 +48,98 @@ public class FrontServlet extends HttpServlet {
 
 	/**
 	 * Ez a metodus vegzi el az inicializalast.
-	 * A feladat minden entitasbol 2-3 peldat letrehozni az esetleges koztuk levo kapcsolattal egyutt.
 	 */
     public void initializeDB() {
     	// TODO: megoldani
     	Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         
-    	Ticket t1;
+    	Ticket t1,t2,t3,t4,t5,t6,t7,t8,t9;
     	t1 = new Ticket("Fooldali hiba", "Hiba van a fooldalon, meg kene javitani", Ticket.NORMAL, Ticket.UJ, new Date());
     	session.save(t1);
     	
-    	t1 = new Ticket("Elromlott a gaztuzhely", "A gaztuzhely surgos javitasra szorul", Ticket.FONTOS, Ticket.UJ, new Date());
-    	session.save(t1);
+    	t2 = new Ticket("Elromlott a gaztuzhely", "A gaztuzhely surgos javitasra szorul", Ticket.FONTOS, Ticket.UJ, new Date());
+    	session.save(t2);
     	
-    	t1 = new Ticket("Oldal hatterszin", "Nem szep a bejelentkezo oldal szine", Ticket.RAER, Ticket.UJ, new Date());
-    	session.save(t1);
+    	t3 = new Ticket("Oldal hatterszin", "Nem szep a bejelentkezo oldal szine", Ticket.RAER, Ticket.UJ, new Date());
+    	session.save(t3);
+    	
+    	t4 = new Ticket("Vegzetes hiba", "Kiborult a kave a tortenelemkonyvre", Ticket.NORMAL, Ticket.UJ, new Date());
+    	session.save(t4);
+    	
+    	t5 = new Ticket("Baleset tortent", "Hazafele nem figyelt egy arok meg elenk ugrott egy padka", Ticket.FONTOS, Ticket.UJ, new Date());
+    	session.save(t5);
+    	
+    	t6 = new Ticket("Betutipus", "Ennel szerencsetlenebb valasztas nehez lett volna", Ticket.RAER, Ticket.UJ, new Date());
+    	session.save(t6);
+    	
+    	t7 = new Ticket("Kapufa", "...es itt a vege a meccsnek", Ticket.NORMAL, Ticket.UJ, new Date());
+    	session.save(t7);
+    	
+    	t8 = new Ticket("Mennyi kell meg?", "Jaj de unom", Ticket.FONTOS, Ticket.UJ, new Date());
+    	session.save(t8);
+    	
+    	t9 = new Ticket("Jo sok okorseget leirok", "De ide meg tobbet kene, csak mar nincs kedvem", Ticket.RAER, Ticket.UJ, new Date());
+    	session.save(t9);
+    	
+    	
+    	Felhasznalo u1,u2,u3,u4;
+    	
+    	u1 = new Felhasznalo("admin", "admin", "Admini Sztrator", Felhasznalo.ADMIN, false);
+    	session.save(u1);
+    	
+    	u2 = new Felhasznalo("moderator", "moderator", "Moder Ator", Felhasznalo.MODERATOR, true);
+    	session.save(u2);
+    	
+    	u3 = new Felhasznalo("munkas1", "munkas1", "Balog Bela", Felhasznalo.FELHASZNALO, true);
+    	session.save(u3);
+    	
+    	u4 = new Felhasznalo("munkas2", "munkas2", "Szalacsi Sandor", Felhasznalo.FELHASZNALO, true);
+    	session.save(u4);
+    	
+    	
+    	DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    	Date hi1,hi2,hi3;
+    	
+    	hi1 = hi2 = hi3 = new Date();
+    	
+        try {
+        	hi1 = df.parse("2011-11-23");
+        	hi2 = df.parse("2010-11-23");
+        	hi3 = df.parse("2011-08-03");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        
+        Merfoldko m1,m2,m3;
+        
+        m1 = new Merfoldko("Beta valtozat", hi1);
+    	session.save(m1);
+    	
+    	m2 = new Merfoldko("Kiadasra jelolt 1", hi2);
+    	session.save(m2);
+    	
+    	m3 = new Merfoldko("Alfa valtozat beta valtozata", hi3);
+    	session.save(m3);
+        
+        /**
+         * Összekapcsolások
+         */
+        t3.setFelelos(u3);
+        t4.setFelelos(u3);
+        
+        t5.setFelelos(u4);
+        t6.setFelelos(u4);
+        t7.setFelelos(u4);
+        
+        Set<Ticket> ticketek;
+        
+        ticketek = new HashSet<Ticket>();
+        ticketek.add(t1);
+        ticketek.add(t3);
+        ticketek.add(t4);
+        m2.setTicketek(ticketek);
+    	
     	
     	session.getTransaction().commit();
 	}

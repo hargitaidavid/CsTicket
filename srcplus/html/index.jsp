@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<%@ page language="java" pageEncoding="utf-8" contentType="text/html;charset=utf-8"%><!DOCTYPE html>
 
 <html lang="hu-HU">
 	<head>
@@ -19,7 +19,9 @@
 
 	    <!-- grid's will help you keep your website appealing to your users, view 52framework.com website for documentation -->
 	    <link rel="stylesheet" type="text/css" href="css/grid.css" media="screen" />
+	    
 		<link rel="stylesheet" href="css/stilusok.css" />
+		<link rel="stylesheet" href="css/tabs.css" />
 	</head>
 	
 	<body>
@@ -27,6 +29,13 @@
 		<jsp:useBean id="tckt" scope="session" class="csillag.controller.TicketController" />
 		<jsp:setProperty name="tckt" property="*" />
 		<%@ page import="java.util.*,csillag.model.*" %>
+		
+		<%
+		if( request.getParameter("cim") != null )
+		{
+			tckt.save(request);
+		}
+		%>
 		
 		<div class="row">
 			<header>
@@ -37,7 +46,7 @@
 				
 					<ul>
 						<li><a href="ujticket.jsp">Új ticket</a></li>
-						<li><a href="index.jsp">Ticketek</a></li>
+						<li><a href="index.jsp" class="active">Ticketek</a></li>
 						<li><a href="merfoldkovek.jsp">Mérföldkövek</a></li>
 					</ul>
 				</nav>
@@ -47,8 +56,18 @@
 		</div>
 		
 		<section class="row">
-			<div class="col_16 col">
+			<div class="col_10 col">
+			
+			<% if( request.getParameter("id") == null ) { %>
+			
 				<h1>Ticketek listája</h1>
+				
+				<ul class="tabs">
+					<li><a href="index.jsp" class="current">Időrendben</a></li>
+					<li><a href="index.jsp?miszerint=felelos">Felelős szerint</a></li>
+					<li><a href="index.jsp?miszerint=merfoldko">Mérföldkő szerint</a></li>
+				</ul>
+				
 				<table>
 					<tr>
 						<th>Cím</th>
@@ -58,9 +77,9 @@
 						<th>Létrehozva</th>
 					</tr>
 			
-				<% for(Object t : tckt.getOsszesTicket()) { %>
+				<% for(Object t : tckt.getAllTickets()) { %>
 					<tr>
-						<td><%= ((Ticket)t).getCim() %></td>
+						<td><a href="index.jsp?id=<%= ((Ticket)t).getId() %>"><%= ((Ticket)t).getCim() %></a></td>
 						<td><%= ((Ticket)t).getLeiras() %></td>
 						<td><%= ((Ticket)t).getFontossag() %></td>
 						<td><%= ((Ticket)t).getAllapot() %></td>
@@ -68,6 +87,73 @@
 					</tr>		
 				<% } %>
 				</table>
+				
+			<% } else {
+				Ticket t = tckt.getObject(request.getParameter("id"));
+			%>
+			
+			<h1 class="fontface"><%= t.getCim() %> ticket adatai</h1>
+			
+			<form class="col col_7" action="index.jsp" method="post">
+	    		<fieldset>	
+	        		<legend>Adatok</legend>
+	        		<input type="hidden" name="id" value="<%= t.getId() %>" />
+	            	<div>
+	            		<label>Cím</label>
+	                	<input type="text" name="cim" value="<%= t.getCim() %>" required="required" class="box_shadow" />
+	            	</div>
+	            	
+	            	<div>
+	            		<label>Leírás</label>
+	                	<textarea name="leiras" required="required" class="box_shadow"><%= t.getLeiras() %></textarea>
+	            	</div>
+	            	
+	            	<div>
+	            		<label>Fontosság</label>
+	            		<select name="fontossag">
+							<option<% if(t.getFontossag() == t.NAGYON_SURGOS){ %> selected="selected"<% } %> value="<%= t.NAGYON_SURGOS %>">Nagyon sürgős</option>
+							<option<% if(t.getFontossag() == t.FONTOS){ %> selected="selected"<% } %> value="<%= t.FONTOS %>">Fontos</option>
+							<option<% if(t.getFontossag() == t.NORMAL){ %> selected="selected"<% } %> value="<%= t.NORMAL %>">Normál</option>
+							<option<% if(t.getFontossag() == t.RAER){ %> selected="selected"<% } %> value="<%= t.RAER %>">Ráér</option>
+						</select>
+					</div>
+					
+					<div>
+	            		<label>Állapot</label>
+	            		<select name="allapot">
+							<option<% if(t.getFontossag() == t.UJ){ %> selected="selected"<% } %> value="<%= t.UJ %>">Új</option>
+							<option<% if(t.getFontossag() == t.MEGOLDVA){ %> selected="selected"<% } %> value="<%= t.MEGOLDVA %>">Megoldva</option>
+							<option<% if(t.getFontossag() == t.NEM_LESZ_MEGOLDVA){ %> selected="selected"<% } %> value="<%= t.NEM_LESZ_MEGOLDVA %>">Nem lesz megoldva</option>
+							<option<% if(t.getFontossag() == t.MODOSITVA){ %> selected="selected"<% } %> value="<%= t.MODOSITVA %>">Módosítva</option>
+							<option<% if(t.getFontossag() == t.TOROLVE){ %> selected="selected"<% } %> value="<%= t.TOROLVE %>">Törölve</option>
+						</select>
+					</div>
+			
+					<div>
+	            		<label>Felelős</label>
+	            		<select name="felelos">
+	            			<option<% if( t.getFelelos().getId() == null ){ %> selected="selected"<% } %> value="0">-- Nincs --</option>
+	            		<% for(Object f : tckt.getDolgozok()) { %>
+							<option<% if( ((Felhasznalo)f).getId() == t.getFelelos().getId()){ %> selected="selected"<% } %> value="<%= ((Felhasznalo)f).getId() %>"><%= ((Felhasznalo)f).getNev() %></option>
+						<% } %>
+						</select>
+					</div>
+
+	            	<input type="submit" value="Mentés" />
+	            	<a href="index.jsp?id=request.getParameter("id")&akcio=torles">Törlés</a>
+
+	        	</fieldset>
+	    	</form>
+			
+			<% } %>
+			</div>
+			
+			<div class="col_6 col">
+				<ul class="szuro_gombok">
+					<li><a href="index.jsp">Összes</a></li>
+					<li><a href="index.jsp?szuro=aktiv">Aktív</a></li>
+					<li><a href="index.jsp?szuro=lezart">Lezárt</a></li>
+				</ul>
 			</div>
 		</section>
 			

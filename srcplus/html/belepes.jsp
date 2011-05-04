@@ -37,7 +37,11 @@
 				<p class="logo col_7 col">Csillag Ticketkezelő</p>
 			
 				<nav class="col_9 col">
-					<a href="belepes.jsp" class="col_9 col" id="belepesLink">Belépés</a>
+					<% if (session.getAttribute("nev") != null) { %>
+					<p id="belepesLink">Bejelentkezve: <strong><%= session.getAttribute("nev") %></strong></p>
+					<% } else { %>
+					<p id="belepesLink"><a href="belepes.jsp" class="col_9 col">Belépés</a></p>
+					<% } %>
 				
 					<ul>
 						<li><a href="ujticket.jsp">Új ticket</a></li>
@@ -60,6 +64,9 @@
 			if( id.intValue() > 0 )
 			{
 				Felhasznalo f = usr.getObject(id);
+				
+				session.setAttribute("nev", f.getNev());
+				session.setAttribute("jog", f.getJogkor());
 		 	%>
 		
 			<h1>Üdv, <%= f.getNev() %></h1>
@@ -69,7 +76,7 @@
 			else
 			{ %>
 			
-			<h1>Helytelen felhasználónév vagy jelszó! <%= id.intValue() %></h1>
+			<h1>Helytelen felhasználónév vagy jelszó!</h1>
 			
 			<%} 
 		} else {

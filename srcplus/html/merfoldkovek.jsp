@@ -42,7 +42,11 @@
 				<p class="logo col_7 col">Csillag Ticketkezelő</p>
 			
 				<nav class="col_9 col">
-					<a href="belepes.jsp" class="col_9 col" id="belepesLink">Belépés</a>
+					<% if (session.getAttribute("nev") != null) { %>
+					<p id="belepesLink">Bejelentkezve: <strong><%= session.getAttribute("nev") %></strong></p>
+					<% } else { %>
+					<p id="belepesLink"><a href="belepes.jsp" class="col_9 col">Belépés</a></p>
+					<% } %>
 				
 					<ul>
 						<li><a href="ujticket.jsp">Új ticket</a></li>
@@ -100,8 +104,12 @@
 	            	    <input type="text" name="hatarido" value="<%= mrfldk.getHatarido((Merfoldko)m, "yyyy-MM-dd") %>" required="required" class="box_shadow" />
 	            	</div>
 
+	            	<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) <= Felhasznalo.MODERATOR ) { %>
 	            	<input type="submit" value="Mentés" />
-	            	<a href="merfoldkovek.jsp?id=request.getParameter("id")&akcio=torles">Törlés</a>
+	            	<% } %>
+	            	<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) <= Felhasznalo.ADMIN ) { %>
+	            	<a href="merfoldkovek.jsp?id=<%= request.getParameter("id") %>&akcio=torles">Törlés</a>
+					<% } %>
 
 	        	</fieldset>
 	    	</form>

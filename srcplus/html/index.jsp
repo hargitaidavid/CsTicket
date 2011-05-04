@@ -42,7 +42,11 @@
 				<p class="logo col_7 col">Csillag Ticketkezelő</p>
 			
 				<nav class="col_9 col">
-					<a href="belepes.jsp" class="col_9 col" id="belepesLink">Belépés</a>
+					<% if (session.getAttribute("nev") != null) { %>
+					<p id="belepesLink">Bejelentkezve: <strong><%= session.getAttribute("nev") %></strong></p>
+					<% } else { %>
+					<p id="belepesLink"><a href="belepes.jsp" class="col_9 col">Belépés</a></p>
+					<% } %>
 				
 					<ul>
 						<li><a href="ujticket.jsp">Új ticket</a></li>
@@ -92,7 +96,7 @@
 				Ticket t = tckt.getObject(request.getParameter("id"));
 			%>
 			
-			<h1 class="fontface"><%= t.getCim() %> ticket adatai</h1>
+			<h1><%= t.getCim() %> ticket adatai</h1>
 			
 			<form class="col col_7" action="index.jsp" method="post">
 	    		<fieldset>	
@@ -132,15 +136,19 @@
 					<div>
 	            		<label>Felelős</label>
 	            		<select name="felelos">
-	            			<option<% if( t.getFelelos().getId() == null ){ %> selected="selected"<% } %> value="0">-- Nincs --</option>
+	            			<option<% if( t.getFelelos() == null ){ %> selected="selected"<% } %> value="0">-- Nincs --</option>
 	            		<% for(Object f : tckt.getDolgozok()) { %>
-							<option<% if( ((Felhasznalo)f).getId() == t.getFelelos().getId()){ %> selected="selected"<% } %> value="<%= ((Felhasznalo)f).getId() %>"><%= ((Felhasznalo)f).getNev() %></option>
+							<option<% if( t.getFelelos() != null && ((Felhasznalo)f).getId() == t.getFelelos().getId()){ %> selected="selected"<% } %> value="<%= ((Felhasznalo)f).getId() %>"><%= ((Felhasznalo)f).getNev() %></option>
 						<% } %>
 						</select>
 					</div>
 
+					<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) <= Felhasznalo.MODERATOR ) { %>
 	            	<input type="submit" value="Mentés" />
-	            	<a href="index.jsp?id=request.getParameter("id")&akcio=torles">Törlés</a>
+	            	<% } %>
+	            	<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) <= Felhasznalo.ADMIN ) { %>
+	            	<a href="index.jsp?id=<%= request.getParameter("id") %>&akcio=torles">Törlés</a>
+	            	<% } %>
 
 	        	</fieldset>
 	    	</form>

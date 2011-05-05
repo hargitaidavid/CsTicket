@@ -83,7 +83,10 @@ public class FrontServlet extends HttpServlet {
     	session.save(t9);
     	
     	
-    	Felhasznalo u1,u2,u3,u4;
+    	Felhasznalo u0,u1,u2,u3,u4;
+    	
+    	u0 = new Felhasznalo("nincs", "nincs", "nincs", Felhasznalo.FELHASZNALO, true);
+    	session.save(u0);
     	
     	u1 = new Felhasznalo("admin", "admin", "Admini Sztrator", Felhasznalo.ADMIN, false);
     	session.save(u1);
@@ -125,12 +128,18 @@ public class FrontServlet extends HttpServlet {
         /**
          * Összekapcsolások
          */
+    	t1.setFelelos(u0);
+    	t2.setFelelos(u0);
+    	
         t3.setFelelos(u3);
         t4.setFelelos(u3);
         
         t5.setFelelos(u4);
         t6.setFelelos(u4);
         t7.setFelelos(u4);
+        
+        t8.setFelelos(u0);
+        t9.setFelelos(u0);
         
         Set<Ticket> ticketek;
         

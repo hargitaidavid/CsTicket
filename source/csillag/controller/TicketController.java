@@ -145,7 +145,7 @@ public class TicketController {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         
-		List<Felhasznalo> dolgozok = session.createQuery("from Felhasznalo where dolgozo=1").list();
+		List<Felhasznalo> dolgozok = session.createQuery("from Felhasznalo where dolgozo=1 and nev != 'nincs'").list();
 		session.getTransaction().commit();
 		
 		return dolgozok;
@@ -165,12 +165,29 @@ public class TicketController {
         
         //t.setCsatolmanyok();
         
-        if (r.getParameter("felelos") != "0")
+        if ( ! "0".equals(r.getParameter("felelos")))
         {
         	Felhasznalo fh = (Felhasznalo)session.load(Felhasznalo.class, Long.valueOf(r.getParameter("felelos")));
         	t.setFelelos(fh);
         }
+        else
+        {
+        	Felhasznalo fh = (Felhasznalo)session.createQuery("from Felhasznalo where nev = 'nincs'").uniqueResult();
+        	t.setFelelos(fh);
+        }
         
+        
+        session.getTransaction().commit();
+	}
+	
+	public void delete(HttpServletRequest r)
+	{
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        
+        Ticket t = (Ticket)session.load(Ticket.class, Long.valueOf(r.getParameter("id")));
+        session.delete(t);
+        //int res = session.createQuery("delete from Ticket ticket where id = :id").setParameter("id", Long.valueOf(r.getParameter("id"))).executeUpdate();
         
         session.getTransaction().commit();
 	}

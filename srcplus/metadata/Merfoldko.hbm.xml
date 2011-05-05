@@ -12,8 +12,8 @@
         <property name="nev"/>
         <property name="hatarido" type="date"/>
         
-        <set name="ticketek" cascade="all">
-            <key column="MERFOLDKO_ID"/>
+        <set name="ticketek" cascade="all" inverse="true">
+            <key column="MERFOLDKAVICS_ID"/>
             <one-to-many class="csillag.model.Ticket"/>
         </set>
     </class>

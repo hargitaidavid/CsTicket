@@ -15,11 +15,11 @@
         <property name="allapot"/>
         <property name="letrehozva" type="timestamp"/>
         
-        <many-to-one name="felelos" class="csillag.model.Felhasznalo" column="FELHASZNALO_ID"/>
-        <many-to-one name="merfoldko" class="csillag.model.Merfoldko" column="MERFOLDKO_ID"/>
+        <many-to-one name="felelos" class="csillag.model.Felhasznalo" column="FELELOS_ID"/>
+        <many-to-one name="merfoldko" class="csillag.model.Merfoldko" column="MERFOLDKAVICS_ID"/>
         
         <set name="csatolmanyok" cascade="all">
-            <key column="TICKET_ID"/>
+            <key column="CSATOLMANY_ID"/>
             <one-to-many class="csillag.model.Csatolmany"/>
         </set>
     </class>

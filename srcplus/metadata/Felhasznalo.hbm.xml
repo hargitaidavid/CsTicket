@@ -15,8 +15,8 @@
         <property name="jogkor"/>
         <property name="dolgozo"/>
         
-        <set name="ticketek" cascade="all">
-            <key column="FELHASZNALO_ID"/>
+        <set name="ticketek" cascade="all" inverse="true">
+            <key column="FELELOS_ID"/>
             <one-to-many class="csillag.model.Ticket"/>
         </set>
     </class>

@@ -67,6 +67,8 @@
 				
 				session.setAttribute("nev", f.getNev());
 				session.setAttribute("jog", f.getJogkor());
+				
+				response.sendRedirect("index.jsp");
 		 	%>
 		
 			<h1>Üdv, <%= f.getNev() %></h1>

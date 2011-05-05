@@ -1,4 +1,23 @@
-<%@ page language="java" pageEncoding="utf-8" contentType="text/html;charset=utf-8"%><!DOCTYPE html>
+<%@ page language="java" pageEncoding="utf-8" contentType="text/html;charset=utf-8" import="java.util.*,csillag.model.*" %>
+
+<jsp:useBean id="tckt" scope="session" class="csillag.controller.TicketController" />
+<jsp:setProperty name="tckt" property="*" />
+
+<%
+
+		if( request.getParameter("cim") != null )
+		{
+			tckt.save(request);
+			response.sendRedirect("index.jsp");
+		}
+		
+		if( "torles".equals(request.getParameter("akcio")) )
+		{
+			tckt.delete(request);
+			response.sendRedirect("index.jsp");
+		}
+		
+%><!DOCTYPE html>
 
 <html lang="hu-HU">
 	<head>
@@ -25,17 +44,6 @@
 	</head>
 	
 	<body>
-	
-		<jsp:useBean id="tckt" scope="session" class="csillag.controller.TicketController" />
-		<jsp:setProperty name="tckt" property="*" />
-		<%@ page import="java.util.*,csillag.model.*" %>
-		
-		<%
-		if( request.getParameter("cim") != null )
-		{
-			tckt.save(request);
-		}
-		%>
 		
 		<div class="row">
 			<header>
@@ -92,9 +100,13 @@
 				<% } %>
 				</table>
 				
+				
+				
 			<% } else {
 				Ticket t = tckt.getObject(request.getParameter("id"));
 			%>
+			
+			
 			
 			<h1><%= t.getCim() %> ticket adatai</h1>
 			
@@ -138,7 +150,7 @@
 	            		<select name="felelos">
 	            			<option<% if( t.getFelelos() == null ){ %> selected="selected"<% } %> value="0">-- Nincs --</option>
 	            		<% for(Object f : tckt.getDolgozok()) { %>
-							<option<% if( t.getFelelos() != null && ((Felhasznalo)f).getId() == t.getFelelos().getId()){ %> selected="selected"<% } %> value="<%= ((Felhasznalo)f).getId() %>"><%= ((Felhasznalo)f).getNev() %></option>
+							<option<% if( ((Felhasznalo)f).getId() == t.getFelelos().getId()){ %> selected="selected"<% } %> value="<%= ((Felhasznalo)f).getId() %>"><%= ((Felhasznalo)f).getNev() %></option>
 						<% } %>
 						</select>
 					</div>

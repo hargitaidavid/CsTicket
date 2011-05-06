@@ -4,7 +4,6 @@
 package csillag.controller;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -21,7 +20,7 @@ import csillag.model.Ticket;
 import csillag.util.HibernateUtil;
 
 /**
- * @author Bognár Szabolcs, Hargitai Dávid
+ * @author Bogn√°r Szabolcs, Hargitai D√°vid
  *
  */
 public class TicketController {
@@ -42,8 +41,8 @@ public class TicketController {
 		Ticket T = new Ticket(cim, leiras, fontossag, Ticket.UJ, new Date());
 		
 		/*
-		 * ide esetleg be lehet venni az aktuális felhasználót, mint a tickethez rendelt
-		 * felelõst, meg esetleg külön megadni a mérföldkövet...
+		 * ide esetleg be lehet venni az aktu√°lis felhaszn√°l√≥t, mint a tickethez rendelt
+		 * felel√µst, meg esetleg k√ºl√∂n megadni a m√©rf√∂ldk√∂vet...
 		 */
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -53,7 +52,7 @@ public class TicketController {
 		session.getTransaction().commit();
 	}
 	
-	// idõrendben listáz
+	// id√µrendben list√°z
 	@SuppressWarnings("unchecked")
 	public List<Ticket> getSortedTickets()
 	{
@@ -66,7 +65,7 @@ public class TicketController {
 		return osszesTicket;
 	}
 	
-	// adott felhasználó ticketjeit listázza ki
+	// adott felhaszn√°l√≥ ticketjeit list√°zza ki
 	@SuppressWarnings("unchecked")
 	public List<Ticket> getTicketsByFelhasznalo(Felhasznalo f)
 	{
@@ -79,7 +78,7 @@ public class TicketController {
 		return ticketek;
 	}
 	
-	// adott mérföldkõ alatti ticketeket listázza ki
+	// adott m√©rf√∂ldk√µ alatti ticketeket list√°zza ki
 	@SuppressWarnings("unchecked")
 	public List<Ticket> getTicketsByMerfoldko(Merfoldko m)
 	{
@@ -92,31 +91,31 @@ public class TicketController {
 		return ticketek;
 	}
 	
-	// ha egy ticket állatota megváltozik
+	// ha egy ticket √°llatota megv√°ltozik
 	public void stateChanged(Ticket t, byte allapot)
 	{
 		t.setAllapot(allapot);
 	}
 	
-	// ha a ticket felelõse megváltozik
+	// ha a ticket felel√µse megv√°ltozik
 	public void responseChanged(Ticket t, Felhasznalo felelos)
 	{
 		t.setFelelos(felelos);
 	}
 	
-	// ha a ticket másik mérföldkõ alá kerül
+	// ha a ticket m√°sik m√©rf√∂ldk√µ al√° ker√ºl
 	public void milestoneChanged(Ticket t, Merfoldko merfoldko)
 	{
 		t.setMerfoldko(merfoldko);
 	}
 	
-	// ha csatolás történik tickethez
+	// ha csatol√°s t√∂rt√©nik tickethez
 	public void attachmentsAdded(Ticket t, Set<Csatolmany> csatolmanyok)
 	{
 		t.setCsatolmanyok(csatolmanyok);
 	}
 	
-	// ha csatolás törlése történik ticketnél
+	// ha csatol√°s t√∂rl√©se t√∂rt√©nik ticketn√©l
 	public void attachmentsDeleted(Ticket t, Set<Csatolmany> csatolmanyok)
 	{
 		if(t.getCsatolmanyok().containsAll(csatolmanyok))
@@ -125,9 +124,22 @@ public class TicketController {
 		}
 		else
 		{
-			// ide talán valami kiíratás kellhetne... vagy úgyis mindegy; ha nem hajtódik végre, nem okoz bajt...
+			// ide tal√°n valami ki√≠rat√°s kellhetne... vagy √∫gyis mindegy; ha nem hajt√≥dik v√©gre, nem okoz bajt...
 			return;
 		}
+	}
+	
+	public String getLetrehozasIdopont(Ticket t, String formatum)
+	{
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+
+		DateFormat df = new SimpleDateFormat(formatum);
+        String hatarido = df.format(t.getLetrehozva());
+        
+        session.getTransaction().commit();
+        
+		return hatarido;
 	}
 	
 	public Ticket getObject(String id)
@@ -146,9 +158,15 @@ public class TicketController {
         session.beginTransaction();
         
 		List<Felhasznalo> dolgozok = session.createQuery("from Felhasznalo where dolgozo=1 and nev != 'nincs'").list();
-		session.getTransaction().commit();
+		
+		// Nem z√°rjuk a sessiont, kell m√©g a m√©rf√∂ldk≈ëlist√°hoz is
 		
 		return dolgozok;
+	}
+	
+	public List<Merfoldko> getMerfoldkovek()
+	{
+		return MerfoldkoController.getAllMilestones();
 	}
 	
 	public void save(HttpServletRequest r)
@@ -176,6 +194,17 @@ public class TicketController {
         	t.setFelelos(fh);
         }
         
+        
+        if ( ! "0".equals(r.getParameter("merfoldko")))
+        {
+        	Merfoldko m = (Merfoldko)session.load(Merfoldko.class, Long.valueOf(r.getParameter("merfoldko")));
+        	t.setMerfoldko(m);
+        }
+        else
+        {
+        	Merfoldko m = (Merfoldko)session.createQuery("from Merfoldko where nev = 'nincs'").uniqueResult();
+        	t.setMerfoldko(m);
+        }
         
         session.getTransaction().commit();
 	}

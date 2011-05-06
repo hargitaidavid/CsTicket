@@ -94,7 +94,7 @@
 						<td><%= ((Ticket)t).getLeiras() %></td>
 						<td><%= ((Ticket)t).getFontossag() %></td>
 						<td><%= ((Ticket)t).getAllapot() %></td>
-						<td><%= ((Ticket)t).getLetrehozva() %></td>
+						<td><%= tckt.getLetrehozasIdopont((Ticket)t, "yyyy-MM-dd HH:mm") %></td>
 					</tr>		
 				<% } %>
 				</table>
@@ -147,9 +147,19 @@
 					<div>
 	            		<label>Felelős</label>
 	            		<select name="felelos">
-	            			<option<% if( t.getFelelos() == null ){ %> selected="selected"<% } %> value="0">-- Nincs --</option>
+	            			<option<% if( "nincs".equals(t.getFelelos().getNev()) ){ %> selected="selected"<% } %> value="0">-- Nincs --</option>
 	            		<% for(Object f : tckt.getDolgozok()) { %>
 							<option<% if( ((Felhasznalo)f).getId() == t.getFelelos().getId()){ %> selected="selected"<% } %> value="<%= ((Felhasznalo)f).getId() %>"><%= ((Felhasznalo)f).getNev() %></option>
+						<% } %>
+						</select>
+					</div>
+					
+					<div>
+	            		<label>Mérföldkő</label>
+	            		<select name="merfoldko">
+	            			<option<% if( "nincs".equals(t.getMerfoldko().getNev()) ){ %> selected="selected"<% } %> value="0">-- Nincs --</option>
+	            		<% for(Object m : tckt.getMerfoldkovek()) { %>
+							<option<% if( ((Merfoldko)m).getId() == t.getMerfoldko().getId()){ %> selected="selected"<% } %> value="<%= ((Merfoldko)m).getId() %>"><%= ((Merfoldko)m).getNev() %></option>
 						<% } %>
 						</select>
 					</div>

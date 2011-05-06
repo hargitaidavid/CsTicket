@@ -28,7 +28,7 @@ import csillag.util.HibernateUtil;
 public class MerfoldkoController {
 	
 	@SuppressWarnings("unchecked")
-	public List<Merfoldko> getAllMilestones()
+	public static List<Merfoldko> getAllMilestones()
 	{
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();

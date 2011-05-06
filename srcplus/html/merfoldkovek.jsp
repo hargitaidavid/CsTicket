@@ -1,4 +1,4 @@
-<%@ page language="java" pageEncoding="utf-8" contentType="text/html;charset=utf-8"%><!DOCTYPE html>
+<%@ page language="java" pageEncoding="utf-8" contentType="text/html;charset=utf-8" import="java.util.*,csillag.model.*" %><!DOCTYPE html>
 
 <html lang="hu-HU">
 	<head>
@@ -30,7 +30,6 @@
 		<jsp:setProperty name="mrfldk" property="*" />
 		<jsp:useBean id="tckt" scope="session" class="csillag.controller.TicketController" />
 		<jsp:setProperty name="tckt" property="*" />
-		<%@ page import="java.util.*,csillag.model.*" %>
 		
 		<%
 		if( "torles".equals(request.getParameter("akcio")) )
@@ -64,6 +63,9 @@
 					<ul>
 						<li><a href="ujticket.jsp">Új ticket</a></li>
 						<li><a href="index.jsp">Ticketek</a></li>
+						<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) >= Felhasznalo.MODERATOR ) { %>
+						<li><a href="ujmerfoldko.jsp">Új mérföldkő</a></li>
+						<% } %>
 						<li><a href="merfoldkovek.jsp" class="active">Mérföldkövek</a></li>
 					</ul>
 				</nav>
@@ -102,7 +104,7 @@
 				Merfoldko m = mrfldk.getObject(request.getParameter("id"));
 			%>
 			
-				<h1 class="fontface"><%= m.getNev() %> mérföldkő adatai</h1>
+				<h1><%= m.getNev() %> mérföldkő adatai</h1>
 
 				<form class="col col_7" action="merfoldkovek.jsp" method="post">
 					<fieldset>	

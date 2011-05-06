@@ -107,18 +107,35 @@ public class MerfoldkoController {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         
-		Merfoldko m = getObject(r.getParameter("id"));
-		
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		Date hi = new Date();
-		try {
-            hi = df.parse(r.getParameter("hatarido"));
-        } catch (ParseException e) {
-            e.printStackTrace();
+        if (r.getParameter("id") == null)
+        {
+        	DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    		Date hi = new Date();
+    		try {
+                hi = df.parse(r.getParameter("hatarido"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            
+        	Merfoldko m = new Merfoldko(r.getParameter("nev"), hi);
+        	session.save(m);
+    		
         }
-        
-        m.setNev(r.getParameter("nev"));
-        m.setHatarido(hi);
+        else
+        {
+        	Merfoldko m = getObject(r.getParameter("id"));
+    		
+    		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    		Date hi = new Date();
+    		try {
+                hi = df.parse(r.getParameter("hatarido"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            
+            m.setNev(r.getParameter("nev"));
+            m.setHatarido(hi);
+        }
         
         session.getTransaction().commit();
 	}

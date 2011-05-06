@@ -1,4 +1,4 @@
-#Fri May 06 12:33:10 CEST 2011
+#Fri May 06 16:15:09 CEST 2011
 eclipse.preferences.version=1
 encoding//source/csillag/FrontServlet.java=UTF-8
 encoding//source/csillag/controller/TicketController.java=UTF-8
@@ -6,3 +6,5 @@ encoding//srcplus/html/belepes.jsp=UTF-8
 encoding//srcplus/html/index.html=UTF-8
 encoding//srcplus/html/index.jsp=UTF-8
 encoding//srcplus/html/merfoldkovek.jsp=UTF-8
+encoding//srcplus/html/ujmerfoldko.jsp=UTF-8
+encoding//srcplus/html/ujticket.jsp=UTF-8

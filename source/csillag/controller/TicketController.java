@@ -3,6 +3,7 @@
  */
 package csillag.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -174,36 +175,55 @@ public class TicketController {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         
-		Ticket t = getObject(r.getParameter("id"));
-
-        t.setCim(r.getParameter("cim"));
-        t.setAllapot(Byte.valueOf(r.getParameter("allapot")));
-        t.setFontossag(Byte.valueOf(r.getParameter("fontossag")));
-        t.setLeiras(r.getParameter("leiras"));
-        
-        //t.setCsatolmanyok();
-        
-        if ( ! "0".equals(r.getParameter("felelos")))
+        if (r.getParameter("id") == null)
         {
-        	Felhasznalo fh = (Felhasznalo)session.load(Felhasznalo.class, Long.valueOf(r.getParameter("felelos")));
-        	t.setFelelos(fh);
-        }
-        else
-        {
+        	
+        	Ticket t = new Ticket(r.getParameter("cim"), r.getParameter("leiras"), Byte.valueOf(r.getParameter("fontossag")), Ticket.UJ, new Date());
+        	
         	Felhasznalo fh = (Felhasznalo)session.createQuery("from Felhasznalo where nev = 'nincs'").uniqueResult();
         	t.setFelelos(fh);
-        }
-        
-        
-        if ( ! "0".equals(r.getParameter("merfoldko")))
-        {
-        	Merfoldko m = (Merfoldko)session.load(Merfoldko.class, Long.valueOf(r.getParameter("merfoldko")));
+        	
+        	Merfoldko m = (Merfoldko)session.createQuery("from Merfoldko where nev = 'nincs'").uniqueResult();
         	t.setMerfoldko(m);
+        	
+        	session.save(t);
+        	
         }
         else
         {
-        	Merfoldko m = (Merfoldko)session.createQuery("from Merfoldko where nev = 'nincs'").uniqueResult();
-        	t.setMerfoldko(m);
+        	
+        	Ticket t = getObject(r.getParameter("id"));
+
+            t.setCim(r.getParameter("cim"));
+            t.setAllapot(Byte.valueOf(r.getParameter("allapot")));
+            t.setFontossag(Byte.valueOf(r.getParameter("fontossag")));
+            t.setLeiras(r.getParameter("leiras"));
+            
+            //t.setCsatolmanyok();
+            
+            if ( ! "0".equals(r.getParameter("felelos")))
+            {
+            	Felhasznalo fh = (Felhasznalo)session.load(Felhasznalo.class, Long.valueOf(r.getParameter("felelos")));
+            	t.setFelelos(fh);
+            }
+            else
+            {
+            	Felhasznalo fh = (Felhasznalo)session.createQuery("from Felhasznalo where nev = 'nincs'").uniqueResult();
+            	t.setFelelos(fh);
+            }
+            
+            
+            if ( ! "0".equals(r.getParameter("merfoldko")))
+            {
+            	Merfoldko m = (Merfoldko)session.load(Merfoldko.class, Long.valueOf(r.getParameter("merfoldko")));
+            	t.setMerfoldko(m);
+            }
+            else
+            {
+            	Merfoldko m = (Merfoldko)session.createQuery("from Merfoldko where nev = 'nincs'").uniqueResult();
+            	t.setMerfoldko(m);
+            }
+        	
         }
         
         session.getTransaction().commit();

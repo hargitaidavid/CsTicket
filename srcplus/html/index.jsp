@@ -58,6 +58,9 @@
 					<ul>
 						<li><a href="ujticket.jsp">Új ticket</a></li>
 						<li><a href="index.jsp" class="active">Ticketek</a></li>
+						<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) >= Felhasznalo.MODERATOR ) { %>
+						<li><a href="ujmerfoldko.jsp">Új mérföldkő</a></li>
+						<% } %>
 						<li><a href="merfoldkovek.jsp">Mérföldkövek</a></li>
 					</ul>
 				</nav>

@@ -28,14 +28,18 @@
 	
 	<body>
 	
-		<jsp:useBean id="tckt" scope="session" class="csillag.controller.TicketController" />
-		<jsp:setProperty name="tckt" property="*" />
+		<jsp:useBean id="mrfldk" scope="session" class="csillag.controller.MerfoldkoController" />
+		<jsp:setProperty name="mrfldk" property="*" />
 
 		<%
-		if( request.getParameter("cim") != null )
+		if( session.getAttribute("jog") == null || Integer.parseInt(session.getAttribute("jog").toString()) < Felhasznalo.MODERATOR )
 		{
-			tckt.save(request);
-			response.sendRedirect("index.jsp");
+			response.sendRedirect("merfoldkovek.jsp");
+		}
+		else if( request.getParameter("nev") != null )
+		{
+			mrfldk.save(request);
+			response.sendRedirect("merfoldkovek.jsp");
 		}
 		%>
 		
@@ -51,10 +55,10 @@
 					<% } %>
 				
 					<ul>
-						<li><a href="ujticket.jsp" class="active">Új ticket</a></li>
+						<li><a href="ujticket.jsp">Új ticket</a></li>
 						<li><a href="index.jsp">Ticketek</a></li>
 						<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) >= Felhasznalo.MODERATOR ) { %>
-						<li><a href="ujmerfoldko.jsp">Új mérföldkő</a></li>
+						<li><a href="ujmerfoldko.jsp" class="active">Új mérföldkő</a></li>
 						<% } %>
 						<li><a href="merfoldkovek.jsp">Mérföldkövek</a></li>
 					</ul>
@@ -67,35 +71,24 @@
 		<section class="row">
 			<div class="col_10 col">
 			
-			<h1>Új ticket létrehozása</h1>
+				<h1>Új mérföldkő létrehozása</h1>
 			
-			<form class="col col_7" action="ujticket.jsp" method="post">
-	    		<fieldset>	
-	        		<legend>Adatok</legend>
-	            	<div>
-	            		<label>Cím</label>
-	                	<input type="text" name="cim" required="required" class="box_shadow" />
-	            	</div>
-	            	
-	            	<div>
-	            		<label>Leírás</label>
-	                	<textarea name="leiras" required="required" class="box_shadow"></textarea>
-	            	</div>
-	            	
-	            	<div>
-	            		<label>Fontosság</label>
-	            		<select name="fontossag">
-							<option value="<%= Ticket.NAGYON_SURGOS %>">Nagyon sürgős</option>
-							<option value="<%= Ticket.FONTOS %>">Fontos</option>
-							<option selected="selected" value="<%= Ticket.NORMAL %>">Normál</option>
-							<option value="<%= Ticket.RAER %>">Ráér</option>
-						</select>
-					</div>
-					
-					<input type="submit" value="Létrehozás" />
+				<form class="col col_7" action="ujmerfoldko.jsp" method="post">
+					<fieldset>	
+						<legend>Adatok</legend>
+				    	<div>
+				    		<label>Név</label>
+				        	<input type="text" name="nev" required="required" class="box_shadow" />
+				    	</div>
+				    	<div>
+				    		<label>Határidő</label>
+				    	    <input type="text" name="hatarido" required="required" class="box_shadow" />
+				    	</div>
 
-	        	</fieldset>
-	    	</form>
+				    	<input type="submit" value="Létrehozás" />
+
+					</fieldset>
+				</form>
 			
 			</div>
 		</section>

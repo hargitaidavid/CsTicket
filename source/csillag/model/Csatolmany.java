@@ -3,22 +3,18 @@
  */
 package csillag.model;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Blob;
-import java.sql.SQLException;
 
-import org.hibernate.Hibernate;
 
 /**
  * @author hargitaidavid
  *
  */
-public class Csatolmany {
+public class Csatolmany implements java.io.Serializable {
 
 	private Long id;
 	private String cim;
-	private byte[] adat;
+	private Blob adat;
 	
 	public Csatolmany() {}
 
@@ -38,11 +34,11 @@ public class Csatolmany {
 		this.cim = cim;
 	}
 
-	public byte[] getAdat() {
+	public Blob getAdat() {
 		return adat;
 	}
 
-	public void setAdat(byte[] adat) {
+	public void setAdat(Blob adat) {
 		this.adat = adat;
 	}
 

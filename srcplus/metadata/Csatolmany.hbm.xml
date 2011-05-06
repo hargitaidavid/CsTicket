@@ -10,7 +10,7 @@
             <generator class="native"/>
         </id>
         <property name="cim"/>
-        <property name="adat" type="binary">
+        <property name="adat" type="blob">
 			<column name="ADAT"/>
 		</property>
         

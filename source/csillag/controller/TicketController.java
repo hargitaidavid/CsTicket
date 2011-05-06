@@ -130,7 +130,7 @@ public class TicketController {
 		}
 	}
 	
-	public String getLetrehozasIdopont(Ticket t, String formatum)
+	public static String getLetrehozasIdopont(Ticket t, String formatum)
 	{
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
@@ -143,7 +143,7 @@ public class TicketController {
 		return hatarido;
 	}
 	
-	public Ticket getObject(String id)
+	public static Ticket getObject(String id)
 	{
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
@@ -153,7 +153,7 @@ public class TicketController {
 		return t;
 	}
 	
-	public List<Felhasznalo> getDolgozok()
+	public static List<Felhasznalo> getDolgozok()
 	{
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
@@ -165,19 +165,13 @@ public class TicketController {
 		return dolgozok;
 	}
 	
-	public List<Merfoldko> getMerfoldkovek()
-	{
-		return MerfoldkoController.getAllMilestones();
-	}
-	
-	public void save(HttpServletRequest r)
+	public static void save(HttpServletRequest r)
 	{
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         
         if (r.getParameter("id") == null)
         {
-        	
         	Ticket t = new Ticket(r.getParameter("cim"), r.getParameter("leiras"), Byte.valueOf(r.getParameter("fontossag")), Ticket.UJ, new Date());
         	
         	Felhasznalo fh = (Felhasznalo)session.createQuery("from Felhasznalo where nev = 'nincs'").uniqueResult();
@@ -192,15 +186,13 @@ public class TicketController {
         else
         {
         	
-        	Ticket t = getObject(r.getParameter("id"));
+        	Ticket t = TicketController.getObject(r.getParameter("id"));
 
             t.setCim(r.getParameter("cim"));
             t.setAllapot(Byte.valueOf(r.getParameter("allapot")));
             t.setFontossag(Byte.valueOf(r.getParameter("fontossag")));
             t.setLeiras(r.getParameter("leiras"));
-            
-            //t.setCsatolmanyok();
-            
+                        
             if ( ! "0".equals(r.getParameter("felelos")))
             {
             	Felhasznalo fh = (Felhasznalo)session.load(Felhasznalo.class, Long.valueOf(r.getParameter("felelos")));
@@ -223,13 +215,20 @@ public class TicketController {
             	Merfoldko m = (Merfoldko)session.createQuery("from Merfoldko where nev = 'nincs'").uniqueResult();
             	t.setMerfoldko(m);
             }
+            
+            
+            if (r.getParameter("csatolmany") != null)
+            {
+            	Csatolmany cs = CsatolmanyController.mentes(r.getParameter("csatolmany"));
+            	t.getCsatolmanyok().add(cs);
+            }
         	
         }
         
         session.getTransaction().commit();
 	}
 	
-	public void delete(HttpServletRequest r)
+	public static void delete(HttpServletRequest r)
 	{
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();

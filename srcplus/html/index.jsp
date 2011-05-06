@@ -30,6 +30,8 @@
 	
 		<jsp:useBean id="tckt" scope="session" class="csillag.controller.TicketController" />
 		<jsp:setProperty name="tckt" property="*" />
+		<jsp:useBean id="mrfldk" scope="session" class="csillag.controller.MerfoldkoController" />
+		<jsp:setProperty name="mrfldk" property="*" />
 
 		<%
 		if( "torles".equals(request.getParameter("akcio")) )
@@ -72,7 +74,7 @@
 		<section class="row">
 			<div class="col_10 col">
 			
-			<% if( request.getParameter("id") == null || "torles".equals(request.getParameter("akcio")) ) { %>
+		<% if( request.getParameter("id") == null || "torles".equals(request.getParameter("akcio")) ) { %>
 			
 				<h1>Ticketek listája</h1>
 				
@@ -104,9 +106,9 @@
 				
 				
 				
-			<% } else {
-				Ticket t = tckt.getObject(request.getParameter("id"));
-			%>
+		<% } else {
+			Ticket t = tckt.getObject(request.getParameter("id"));
+		%>
 			
 			
 			
@@ -117,18 +119,18 @@
 	        		<legend>Adatok</legend>
 	        		<input type="hidden" name="id" value="<%= t.getId() %>" />
 	            	<div>
-	            		<label>Cím</label>
-	                	<input type="text" name="cim" value="<%= t.getCim() %>" required="required" class="box_shadow" />
+	            		<label for="cim">Cím</label>
+	                	<input id="cim" type="text" name="cim" value="<%= t.getCim() %>" required="required" class="box_shadow" />
 	            	</div>
 	            	
 	            	<div>
-	            		<label>Leírás</label>
-	                	<textarea name="leiras" required="required" class="box_shadow"><%= t.getLeiras() %></textarea>
+	            		<label for="leiras">Leírás</label>
+	                	<textarea id="leiras" name="leiras" required="required" class="box_shadow"><%= t.getLeiras() %></textarea>
 	            	</div>
 	            	
 	            	<div>
-	            		<label>Fontosság</label>
-	            		<select name="fontossag">
+	            		<label for="fontossag">Fontosság</label>
+	            		<select name="fontossag" id="fontossag">
 							<option<% if(t.getFontossag() == t.NAGYON_SURGOS){ %> selected="selected"<% } %> value="<%= t.NAGYON_SURGOS %>">Nagyon sürgős</option>
 							<option<% if(t.getFontossag() == t.FONTOS){ %> selected="selected"<% } %> value="<%= t.FONTOS %>">Fontos</option>
 							<option<% if(t.getFontossag() == t.NORMAL){ %> selected="selected"<% } %> value="<%= t.NORMAL %>">Normál</option>
@@ -137,8 +139,8 @@
 					</div>
 					
 					<div>
-	            		<label>Állapot</label>
-	            		<select name="allapot">
+	            		<label for="allapot">Állapot</label>
+	            		<select name="allapot" id="allapot">
 							<option<% if(t.getAllapot() == t.UJ){ %> selected="selected"<% } %> value="<%= t.UJ %>">Új</option>
 							<option<% if(t.getAllapot() == t.MEGOLDVA){ %> selected="selected"<% } %> value="<%= t.MEGOLDVA %>">Megoldva</option>
 							<option<% if(t.getAllapot() == t.NEM_LESZ_MEGOLDVA){ %> selected="selected"<% } %> value="<%= t.NEM_LESZ_MEGOLDVA %>">Nem lesz megoldva</option>
@@ -148,8 +150,8 @@
 					</div>
 			
 					<div>
-	            		<label>Felelős</label>
-	            		<select name="felelos">
+	            		<label for="felelos">Felelős</label>
+	            		<select name="felelos" id="felelos">
 	            			<option<% if( "nincs".equals(t.getFelelos().getNev()) ){ %> selected="selected"<% } %> value="0">-- Nincs --</option>
 	            		<% for(Object f : tckt.getDolgozok()) { %>
 							<option<% if( ((Felhasznalo)f).getId() == t.getFelelos().getId()){ %> selected="selected"<% } %> value="<%= ((Felhasznalo)f).getId() %>"><%= ((Felhasznalo)f).getNev() %></option>
@@ -158,13 +160,18 @@
 					</div>
 					
 					<div>
-	            		<label>Mérföldkő</label>
-	            		<select name="merfoldko">
+	            		<label for="merfoldko">Mérföldkő</label>
+	            		<select name="merfoldko" id="merfoldko">
 	            			<option<% if( "nincs".equals(t.getMerfoldko().getNev()) ){ %> selected="selected"<% } %> value="0">-- Nincs --</option>
-	            		<% for(Object m : tckt.getMerfoldkovek()) { %>
+	            		<% for(Object m : mrfldk.getAllMilestones()) { %>
 							<option<% if( ((Merfoldko)m).getId() == t.getMerfoldko().getId()){ %> selected="selected"<% } %> value="<%= ((Merfoldko)m).getId() %>"><%= ((Merfoldko)m).getNev() %></option>
 						<% } %>
 						</select>
+					</div>
+					
+					<div>
+						<label for="csatolmany">Csatolmány</label>
+						<input type="file" name="csatolmany" id="csatolmany">
 					</div>
 
 					<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) >= Felhasznalo.MODERATOR ) { %>
@@ -176,8 +183,20 @@
 
 	        	</fieldset>
 	    	</form>
+	    	
+	    	<%
+	    	t = tckt.getObject(request.getParameter("id"));
+	    	if( ! t.getCsatolmanyok().isEmpty() ) { %>
+	    	<div id="csatolmanyokDoboz">
+	    		<ul>
+	    			<% for(Object cs : t.getCsatolmanyok()) { %>
+					<li><a href="csatolmany.jsp?id=<%= ((Csatolmany)cs).getId() %>"><%= ((Csatolmany)cs).getCim() %></a> <a href="valahova">törlés</a></li>
+					<% } %>
+				</ul>
+	    	</div>
+	    	<% } %>
 			
-			<% } %>
+		<% } %>
 			</div>
 			
 			<% if( request.getParameter("id") == null || "torles".equals(request.getParameter("akcio")) ) { %>

@@ -187,7 +187,6 @@ public class TicketController {
         
         Ticket t = (Ticket)session.load(Ticket.class, Long.valueOf(r.getParameter("id")));
         session.delete(t);
-        //int res = session.createQuery("delete from Ticket ticket where id = :id").setParameter("id", Long.valueOf(r.getParameter("id"))).executeUpdate();
         
         session.getTransaction().commit();
 	}

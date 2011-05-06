@@ -31,9 +31,15 @@
 		<%@ page import="java.util.*,csillag.model.*" %>
 		
 		<%
-		if( request.getParameter("nev") != null )
+		if( "torles".equals(request.getParameter("akcio")) )
+		{
+			mrfldk.delete(request);
+			response.sendRedirect("merfoldkovek.jsp");
+		}
+		else if( request.getParameter("nev") != null )
 		{
 			mrfldk.save(request);
+			response.sendRedirect("merfoldkovek.jsp");
 		}
 		%>
 		
@@ -62,7 +68,7 @@
 		<section class="row">
 			<div class="col_10 col">
 			
-			<% if( request.getParameter("id") == null ) { %>
+			<% if( request.getParameter("id") == null || "torles".equals(request.getParameter("akcio")) ) { %>
 			
 				<h1>Mérföldkövek listája</h1>
 				
@@ -104,10 +110,10 @@
 	            	    <input type="text" name="hatarido" value="<%= mrfldk.getHatarido((Merfoldko)m, "yyyy-MM-dd") %>" required="required" class="box_shadow" />
 	            	</div>
 
-	            	<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) <= Felhasznalo.MODERATOR ) { %>
+	            	<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) >= Felhasznalo.MODERATOR ) { %>
 	            	<input type="submit" value="Mentés" />
 	            	<% } %>
-	            	<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) <= Felhasznalo.ADMIN ) { %>
+	            	<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) >= Felhasznalo.ADMIN ) { %>
 	            	<a href="merfoldkovek.jsp?id=<%= request.getParameter("id") %>&akcio=torles">Törlés</a>
 					<% } %>
 

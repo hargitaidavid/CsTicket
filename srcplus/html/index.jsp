@@ -1,23 +1,6 @@
 <%@ page language="java" pageEncoding="utf-8" contentType="text/html;charset=utf-8" import="java.util.*,csillag.model.*" %>
 
-<jsp:useBean id="tckt" scope="session" class="csillag.controller.TicketController" />
-<jsp:setProperty name="tckt" property="*" />
-
-<%
-
-		if( request.getParameter("cim") != null )
-		{
-			tckt.save(request);
-			response.sendRedirect("index.jsp");
-		}
-		
-		if( "torles".equals(request.getParameter("akcio")) )
-		{
-			tckt.delete(request);
-			response.sendRedirect("index.jsp");
-		}
-		
-%><!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="hu-HU">
 	<head>
@@ -44,6 +27,22 @@
 	</head>
 	
 	<body>
+	
+		<jsp:useBean id="tckt" scope="session" class="csillag.controller.TicketController" />
+		<jsp:setProperty name="tckt" property="*" />
+
+		<%
+		if( "torles".equals(request.getParameter("akcio")) )
+		{
+			tckt.delete(request);
+			response.sendRedirect("index.jsp");
+		}
+		else if( request.getParameter("cim") != null )
+		{
+			tckt.save(request);
+			response.sendRedirect("index.jsp");
+		}
+		%>
 		
 		<div class="row">
 			<header>
@@ -70,7 +69,7 @@
 		<section class="row">
 			<div class="col_10 col">
 			
-			<% if( request.getParameter("id") == null ) { %>
+			<% if( request.getParameter("id") == null || "torles".equals(request.getParameter("akcio")) ) { %>
 			
 				<h1>Ticketek listája</h1>
 				
@@ -137,11 +136,11 @@
 					<div>
 	            		<label>Állapot</label>
 	            		<select name="allapot">
-							<option<% if(t.getFontossag() == t.UJ){ %> selected="selected"<% } %> value="<%= t.UJ %>">Új</option>
-							<option<% if(t.getFontossag() == t.MEGOLDVA){ %> selected="selected"<% } %> value="<%= t.MEGOLDVA %>">Megoldva</option>
-							<option<% if(t.getFontossag() == t.NEM_LESZ_MEGOLDVA){ %> selected="selected"<% } %> value="<%= t.NEM_LESZ_MEGOLDVA %>">Nem lesz megoldva</option>
-							<option<% if(t.getFontossag() == t.MODOSITVA){ %> selected="selected"<% } %> value="<%= t.MODOSITVA %>">Módosítva</option>
-							<option<% if(t.getFontossag() == t.TOROLVE){ %> selected="selected"<% } %> value="<%= t.TOROLVE %>">Törölve</option>
+							<option<% if(t.getAllapot() == t.UJ){ %> selected="selected"<% } %> value="<%= t.UJ %>">Új</option>
+							<option<% if(t.getAllapot() == t.MEGOLDVA){ %> selected="selected"<% } %> value="<%= t.MEGOLDVA %>">Megoldva</option>
+							<option<% if(t.getAllapot() == t.NEM_LESZ_MEGOLDVA){ %> selected="selected"<% } %> value="<%= t.NEM_LESZ_MEGOLDVA %>">Nem lesz megoldva</option>
+							<option<% if(t.getAllapot() == t.MODOSITVA){ %> selected="selected"<% } %> value="<%= t.MODOSITVA %>">Módosítva</option>
+							<option<% if(t.getAllapot() == t.TOROLVE){ %> selected="selected"<% } %> value="<%= t.TOROLVE %>">Törölve</option>
 						</select>
 					</div>
 			
@@ -155,10 +154,10 @@
 						</select>
 					</div>
 
-					<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) <= Felhasznalo.MODERATOR ) { %>
+					<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) >= Felhasznalo.MODERATOR ) { %>
 	            	<input type="submit" value="Mentés" />
 	            	<% } %>
-	            	<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) <= Felhasznalo.ADMIN ) { %>
+	            	<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) >= Felhasznalo.ADMIN ) { %>
 	            	<a href="index.jsp?id=<%= request.getParameter("id") %>&akcio=torles">Törlés</a>
 	            	<% } %>
 
@@ -168,6 +167,7 @@
 			<% } %>
 			</div>
 			
+			<% if( request.getParameter("id") == null || "torles".equals(request.getParameter("akcio")) ) { %>
 			<div class="col_6 col">
 				<ul class="szuro_gombok">
 					<li><a href="index.jsp">Összes</a></li>
@@ -175,6 +175,7 @@
 					<li><a href="index.jsp?szuro=lezart">Lezárt</a></li>
 				</ul>
 			</div>
+			<% } %>
 		</section>
 			
 	

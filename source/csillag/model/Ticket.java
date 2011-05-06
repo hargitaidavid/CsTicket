@@ -14,10 +14,10 @@ public class Ticket {
 	/**
 	 * Fontossági értékek
 	 */
-	public static final byte NAGYON_SURGOS = 1;
-	public static final byte FONTOS = 3;
-	public static final byte NORMAL = 5;
-	public static final byte RAER = 7;
+	public static final byte NAGYON_SURGOS = 7;
+	public static final byte FONTOS = 5;
+	public static final byte NORMAL = 3;
+	public static final byte RAER = 1;
 	
 	/**
 	 * Állapotok

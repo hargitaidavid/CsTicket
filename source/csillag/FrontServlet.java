@@ -54,6 +54,34 @@ public class FrontServlet extends HttpServlet {
     	Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    	Date hi1,hi2,hi3;
+    	
+    	hi1 = hi2 = hi3 = new Date();
+    	
+        try {
+        	hi1 = df.parse("2011-11-23");
+        	hi2 = df.parse("2010-11-23");
+        	hi3 = df.parse("2011-08-03");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        
+        Merfoldko m0,m1,m2,m3;
+        
+        m0 = new Merfoldko("nincs", null);
+    	session.save(m0);
+        
+        m1 = new Merfoldko("Beta valtozat", hi1);
+    	session.save(m1);
+    	
+    	m2 = new Merfoldko("Kiadasra jelolt 1", hi2);
+    	session.save(m2);
+    	
+    	m3 = new Merfoldko("Alfa valtozat beta valtozata", hi3);
+    	session.save(m3);
+    	
+        
     	Ticket t1,t2,t3,t4,t5,t6,t7,t8,t9;
     	t1 = new Ticket("Fooldali hiba", "Hiba van a fooldalon, meg kene javitani", Ticket.NORMAL, Ticket.UJ, new Date());
     	session.save(t1);
@@ -100,55 +128,37 @@ public class FrontServlet extends HttpServlet {
     	u4 = new Felhasznalo("munkas2", "munkas2", "Szalacsi Sandor", Felhasznalo.FELHASZNALO, true);
     	session.save(u4);
     	
-    	
-    	DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-    	Date hi1,hi2,hi3;
-    	
-    	hi1 = hi2 = hi3 = new Date();
-    	
-        try {
-        	hi1 = df.parse("2011-11-23");
-        	hi2 = df.parse("2010-11-23");
-        	hi3 = df.parse("2011-08-03");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        
-        Merfoldko m1,m2,m3;
-        
-        m1 = new Merfoldko("Beta valtozat", hi1);
-    	session.save(m1);
-    	
-    	m2 = new Merfoldko("Kiadasra jelolt 1", hi2);
-    	session.save(m2);
-    	
-    	m3 = new Merfoldko("Alfa valtozat beta valtozata", hi3);
-    	session.save(m3);
         
         /**
          * Összekapcsolások
          */
     	t1.setFelelos(u0);
+    	t1.setMerfoldko(m3);
+    	
     	t2.setFelelos(u0);
+    	t2.setMerfoldko(m0);
     	
         t3.setFelelos(u3);
+        t3.setMerfoldko(m3);
+        
         t4.setFelelos(u3);
+        t4.setMerfoldko(m3);
         
         t5.setFelelos(u4);
+        t5.setMerfoldko(m0);
+        
         t6.setFelelos(u4);
+        t6.setMerfoldko(m0);
+        
         t7.setFelelos(u4);
+        t7.setMerfoldko(m1);
         
         t8.setFelelos(u0);
+        t8.setMerfoldko(m0);
+        
         t9.setFelelos(u0);
-        
-        Set<Ticket> ticketek;
-        
-        ticketek = new HashSet<Ticket>();
-        ticketek.add(t1);
-        ticketek.add(t3);
-        ticketek.add(t4);
-        m2.setTicketek(ticketek);
-    	
+        t9.setMerfoldko(m2);
+            	
     	
     	session.getTransaction().commit();
 	}

@@ -6,6 +6,7 @@ package csillag.controller;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.Session;
 
+import csillag.model.Felhasznalo;
 import csillag.model.Merfoldko;
 import csillag.model.Ticket;
 import csillag.util.HibernateUtil;
@@ -31,7 +33,15 @@ public class MerfoldkoController {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         
-		List<Merfoldko> osszesMerfoldko = session.createQuery("from Merfoldko").list();
+		List<Merfoldko> osszesMerfoldko = new ArrayList<Merfoldko>();
+		
+		Iterator<Merfoldko> it = session.createQuery("from Merfoldko").list().iterator();
+		while(it.hasNext())
+		{
+			Merfoldko m = it.next();
+			if( ! "nincs".equals(m.getNev())) osszesMerfoldko.add(m);
+		}
+		
 		session.getTransaction().commit();
 		
 		return osszesMerfoldko;
@@ -66,7 +76,7 @@ public class MerfoldkoController {
 
 	public int lezartTicketekSzama(Long id)
 	{
-	    int sz = getTicketsNumberByState(id, Ticket.NEM_LESZ_MEGOLDVA);
+	    int sz = getTicketsNumberByState(id, Ticket.NEM_LESZ_MEGOLDVA) + getTicketsNumberByState(id, Ticket.MEGOLDVA);
 
 		return sz;
 	}
@@ -111,6 +121,29 @@ public class MerfoldkoController {
         
         m.setNev(r.getParameter("nev"));
         m.setHatarido(hi);
+        
+        session.getTransaction().commit();
+	}
+	
+	public void delete(HttpServletRequest r)
+	{
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        
+        Merfoldko m = (Merfoldko)session.load(Merfoldko.class, Long.valueOf(r.getParameter("id")));
+        Merfoldko m0 = (Merfoldko)session.createQuery("from Merfoldko where nev = 'nincs'").uniqueResult();
+        
+        Set<Ticket> ticketek = m.getTicketek();
+        m.getTicketek().clear();
+        
+		Iterator<Ticket> it = ticketek.iterator();
+		while(it.hasNext())
+		{
+			Ticket t = it.next();
+			t.setMerfoldko(m0);
+		}
+        
+        session.delete(m);
         
         session.getTransaction().commit();
 	}

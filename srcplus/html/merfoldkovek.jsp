@@ -28,6 +28,8 @@
 	
 		<jsp:useBean id="mrfldk" scope="session" class="csillag.controller.MerfoldkoController" />
 		<jsp:setProperty name="mrfldk" property="*" />
+		<jsp:useBean id="tckt" scope="session" class="csillag.controller.TicketController" />
+		<jsp:setProperty name="tckt" property="*" />
 		<%@ page import="java.util.*,csillag.model.*" %>
 		
 		<%
@@ -35,6 +37,11 @@
 		{
 			mrfldk.delete(request);
 			response.sendRedirect("merfoldkovek.jsp");
+		}
+		else if( "tickettorles".equals(request.getParameter("akcio")) )
+		{
+			mrfldk.deleteTicket(request);
+			response.sendRedirect("merfoldkovek.jsp?id="+request.getParameter("id"));
 		}
 		else if( request.getParameter("nev") != null )
 		{
@@ -95,30 +102,56 @@
 				Merfoldko m = mrfldk.getObject(request.getParameter("id"));
 			%>
 			
-			<h1 class="fontface"><%= m.getNev() %> mérföldkő adatai</h1>
-			
-			<form class="col col_7" action="merfoldkovek.jsp" method="post">
-	    		<fieldset>	
-	        		<legend>Adatok</legend>
-	        		<input type="hidden" name="id" value="<%= m.getId() %>" />
-	            	<div>
-	            		<label>Név</label>
-	                	<input type="text" name="nev" value="<%= m.getNev() %>" required="required" class="box_shadow" />
-	            	</div>
-	            	<div>
-	            		<label>Határidő ("yyyy-MM-dd")</label>
-	            	    <input type="text" name="hatarido" value="<%= mrfldk.getHatarido((Merfoldko)m, "yyyy-MM-dd") %>" required="required" class="box_shadow" />
-	            	</div>
+				<h1 class="fontface"><%= m.getNev() %> mérföldkő adatai</h1>
 
-	            	<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) >= Felhasznalo.MODERATOR ) { %>
-	            	<input type="submit" value="Mentés" />
-	            	<% } %>
-	            	<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) >= Felhasznalo.ADMIN ) { %>
-	            	<a href="merfoldkovek.jsp?id=<%= request.getParameter("id") %>&akcio=torles">Törlés</a>
+				<form class="col col_7" action="merfoldkovek.jsp" method="post">
+					<fieldset>	
+						<legend>Adatok</legend>
+						<input type="hidden" name="id" value="<%= m.getId() %>" />
+				    	<div>
+				    		<label>Név</label>
+				        	<input type="text" name="nev" value="<%= m.getNev() %>" required="required" class="box_shadow" />
+				    	</div>
+				    	<div>
+				    		<label>Határidő ("yyyy-MM-dd")</label>
+				    	    <input type="text" name="hatarido" value="<%= mrfldk.getHatarido((Merfoldko)m, "yyyy-MM-dd") %>" required="required" class="box_shadow" />
+				    	</div>
+
+				    	<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) >= Felhasznalo.MODERATOR ) { %>
+				    	<input type="submit" value="Mentés" />
+				    	<% } %>
+				    	<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) >= Felhasznalo.ADMIN ) { %>
+				    	<a href="merfoldkovek.jsp?id=<%= request.getParameter("id") %>&akcio=torles">Törlés</a>
+						<% } %>
+
+					</fieldset>
+				</form>
+
+				<% if( ! m.getTicketek().isEmpty() ) { %>
+				<table>
+					<caption>Ticketek</caption>
+					<tr>
+						<th>Cím</th>
+						<th>Fontosság</th>
+						<th>Állapot</th>
+						<th>Létrehozva</th>
+						<th>Művelet</th>
+					</tr>
+					<% for(Object t : m.getTicketek()) { %>
+					<tr>
+						<td><%= ((Ticket)t).getCim() %></td>
+						<td><%= ((Ticket)t).getFontossag() %></td>
+						<td><%= ((Ticket)t).getAllapot() %></td>
+						<td><%= tckt.getLetrehozasIdopont((Ticket)t, "yyyy-MM-dd HH:mm") %></td>
+						<td><a href="index.jsp?id=<%= ((Ticket)t).getId() %>">Részletek</a><br>
+							<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) >= Felhasznalo.MODERATOR ) { %>
+							<a href="merfoldkovek.jsp?id=<%= request.getParameter("id") %>&akcio=tickettorles&tid=<%= ((Ticket)t).getId() %>">Törlés</a>
+							<% } %>
+						</td>
+					</tr>	
 					<% } %>
-
-	        	</fieldset>
-	    	</form>
+				</table>
+				<% } %>
 			
 			<% } %>
 			</div>

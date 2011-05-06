@@ -89,8 +89,6 @@ public class MerfoldkoController {
 		DateFormat df = new SimpleDateFormat(formatum);
         String hatarido = df.format(m.getHatarido());
         
-        session.getTransaction().commit();
-        
 		return hatarido;
 	}
 	
@@ -146,6 +144,26 @@ public class MerfoldkoController {
         session.delete(m);
         
         session.getTransaction().commit();
+	}
+	
+	public void deleteTicket(HttpServletRequest r)
+	{
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        
+        Merfoldko m = (Merfoldko)session.load(Merfoldko.class, Long.valueOf(r.getParameter("id")));
+        Merfoldko m0 = (Merfoldko)session.createQuery("from Merfoldko where nev = 'nincs'").uniqueResult();
+        Ticket t = (Ticket)session.load(Ticket.class, Long.valueOf(r.getParameter("tid")));
+        
+        m.getTicketek().remove(t);
+        t.setMerfoldko(m0);       
+        
+        if (m.getTicketek().size() < 1)
+        {
+        	session.getTransaction().commit();
+        	session = HibernateUtil.getSessionFactory().getCurrentSession();
+            session.beginTransaction();
+        }
 	}
 	
 }

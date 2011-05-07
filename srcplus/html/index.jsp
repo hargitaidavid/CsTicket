@@ -22,6 +22,8 @@
 	    <!-- grid's will help you keep your website appealing to your users, view 52framework.com website for documentation -->
 	    <link rel="stylesheet" type="text/css" href="css/grid.css" media="screen" />
 	    
+	    <link rel="stylesheet" type="text/css" href="css/forms.css" media="screen" />
+	    
 		<link rel="stylesheet" href="css/stilusok.css" />
 		<link rel="stylesheet" href="css/tabs.css" />
 	</head>
@@ -49,6 +51,15 @@
 			tckt.save(request);
 			response.sendRedirect("index.jsp");
 		}
+		
+		String miszerint, szuro;
+			
+		if (request.getParameter("miszerint") == null) miszerint = "idorend";
+		else miszerint = request.getParameter("miszerint");
+			
+		if (request.getParameter("szuro") == null) szuro = "osszes";
+		else szuro = request.getParameter("szuro");
+
 		%>
 		
 		<div class="row">
@@ -84,32 +95,96 @@
 				<h1>Ticketek listája</h1>
 				
 				<ul class="tabs">
-					<li><a href="index.jsp" class="current">Időrendben</a></li>
-					<li><a href="index.jsp?miszerint=felelos">Felelős szerint</a></li>
-					<li><a href="index.jsp?miszerint=merfoldko">Mérföldkő szerint</a></li>
+					<li><a href="index.jsp<% if (! szuro.equals("osszes")) { %>?szuro=<%= szuro %><% } %>"<% if (miszerint.equals("idorend")) { %> class="current"<% } %>>Időrendben</a></li>
+					<li><a href="index.jsp?miszerint=felelos<% if (! szuro.equals("osszes")) { %>&szuro=<%= szuro %><% } %>"<% if (miszerint.equals("felelos")) { %> class="current"<% } %>>Felelős szerint</a></li>
+					<li><a href="index.jsp?miszerint=merfoldko<% if (! szuro.equals("osszes")) { %>&szuro=<%= szuro %><% } %>"<% if (miszerint.equals("merfoldko")) { %> class="current"<% } %>>Mérföldkő szerint</a></li>
 				</ul>
+				
+			<% if (miszerint.equals("felelos")) { %>
+			
+				<table>
+					<tr>
+						<td></td>
+						<th scope="col">Cím</th>
+						<th scope="col">Leírás</th>
+						<th scope="col">Fontosság</th>
+						<th scope="col">Állapot</th>
+						<th scope="col">Létrehozva</th>
+					</tr>
+			
+					<%
+					int zebra = -1;
+					for(Object f : tckt.getDolgozok()) {
+						int szamlalo = 0;
+						zebra = -zebra;
+						for(Object t : tckt.getTicketsByFelhasznalo(((Felhasznalo)f).getId(), szuro)) { %>
+						<tr class="<%= zebra < 0 ? "odd" : "even" %>">
+							<%= szamlalo++ == 0 ? "<th scope='rowgroup'>"+((Felhasznalo)f).getNev()+"</th>" : "<td></td>" %>
+							<td><a href="index.jsp?id=<%= ((Ticket)t).getId() %>"><%= ((Ticket)t).getCim() %></a></td>
+							<td><%= ((Ticket)t).getLeiras() %></td>
+							<td><%= ((Ticket)t).getFontossag() %></td>
+							<td><%= ((Ticket)t).getAllapot() %></td>
+							<td><%= tckt.getLetrehozasIdopont((Ticket)t, "yyyy-MM-dd HH:mm") %></td>
+						</tr>		
+						<% } %>
+					<% } %>
+				</table>
+			
+			<% } else if (miszerint.equals("merfoldko")) { %>
+			
+				<table>
+					<tr>
+						<td></td>
+						<th scope="col">Cím</th>
+						<th scope="col">Leírás</th>
+						<th scope="col">Fontosság</th>
+						<th scope="col">Állapot</th>
+						<th scope="col">Létrehozva</th>
+					</tr>
+			
+					<%
+					int zebra = -1;
+					for(Object m : mrfldk.getAllMilestones()) {
+						int szamlalo = 0;
+						zebra = -zebra;
+						for(Object t : tckt.getTicketsByMerfoldko(((Merfoldko)m).getId(), szuro)) { %>
+						<tr class="<%= zebra < 0 ? "odd" : "even" %>">
+							<%= szamlalo++ == 0 ? "<th scope='rowgroup'>"+((Merfoldko)m).getNev()+"</th>" : "<td></td>" %>
+							<td><a href="index.jsp?id=<%= ((Ticket)t).getId() %>"><%= ((Ticket)t).getCim() %></a></td>
+							<td><%= ((Ticket)t).getLeiras() %></td>
+							<td><%= ((Ticket)t).getFontossag() %></td>
+							<td><%= ((Ticket)t).getAllapot() %></td>
+							<td><%= tckt.getLetrehozasIdopont((Ticket)t, "yyyy-MM-dd HH:mm") %></td>
+						</tr>		
+						<% } %>
+					<% } %>
+				</table>
+			
+			<% } else { %>
 				
 				<table>
 					<tr>
-						<th>Cím</th>
-						<th>Leírás</th>
-						<th>Fontosság</th>
-						<th>Állapot</th>
-						<th>Létrehozva</th>
+						<th scope="col">Cím</th>
+						<th scope="col">Leírás</th>
+						<th scope="col">Fontosság</th>
+						<th scope="col">Állapot</th>
+						<th scope="col">Létrehozva</th>
 					</tr>
 			
-				<% for(Object t : tckt.getAllTickets()) { %>
-					<tr>
-						<td><a href="index.jsp?id=<%= ((Ticket)t).getId() %>"><%= ((Ticket)t).getCim() %></a></td>
-						<td><%= ((Ticket)t).getLeiras() %></td>
-						<td><%= ((Ticket)t).getFontossag() %></td>
-						<td><%= ((Ticket)t).getAllapot() %></td>
-						<td><%= tckt.getLetrehozasIdopont((Ticket)t, "yyyy-MM-dd HH:mm") %></td>
-					</tr>		
-				<% } %>
+					<%
+					int szamlalo = 0;
+					for(Object t : tckt.getAllTickets(szuro)) { %>
+						<tr class="<%= szamlalo++ % 2 == 0 ? "odd" : "even" %>">
+							<td><a href="index.jsp?id=<%= ((Ticket)t).getId() %>"><%= ((Ticket)t).getCim() %></a></td>
+							<td><%= ((Ticket)t).getLeiras() %></td>
+							<td><%= ((Ticket)t).getFontossag() %></td>
+							<td><%= ((Ticket)t).getAllapot() %></td>
+							<td><%= tckt.getLetrehozasIdopont((Ticket)t, "yyyy-MM-dd HH:mm") %></td>
+						</tr>		
+					<% } %>
 				</table>
 				
-				
+			<% } %>
 				
 		<% } else {
 			Ticket t = tckt.getObject(request.getParameter("id"));
@@ -127,12 +202,7 @@
 	            		<label for="cim">Cím</label>
 	                	<input id="cim" type="text" name="cim" value="<%= t.getCim() %>" required="required" class="box_shadow" />
 	            	</div>
-	            	
-	            	<div>
-	            		<label for="leiras">Leírás</label>
-	                	<textarea id="leiras" name="leiras" required="required" class="box_shadow"><%= t.getLeiras() %></textarea>
-	            	</div>
-	            	
+	            		            	
 	            	<div>
 	            		<label for="fontossag">Fontosság</label>
 	            		<select name="fontossag" id="fontossag">
@@ -174,6 +244,14 @@
 						</select>
 					</div>
 					
+					
+	            	<div class="textarea">
+	            		<label for="leiras">Leírás</label>
+	                	<textarea id="leiras" name="leiras" required="required" class="box_shadow"><%= t.getLeiras() %></textarea>
+	            	</div>
+	            	
+	            	<div class="clear"></div>
+					
 					<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) >= Felhasznalo.MODERATOR ) { %>
 	            	<input type="submit" value="Mentés" />
 	            	<% } %>
@@ -186,7 +264,7 @@
 	    	
 	    	<form class="col col_7" action="csatolmanymentes.jsp" method="post" enctype="multipart/form-data">
 	    		<fieldset>	
-	        		<input type="hidden" name="id" value="<%= request.getParameter("id") %>" />
+	        		<input type="hidden" name="id" value="<%= request.getParameter("id") %>">
 					<div>
 						<label for="csatolmany">Csatolmány</label>
 						<input type="file" name="csatolmany" id="csatolmany">
@@ -196,10 +274,26 @@
 	        	</fieldset>
 	    	</form>
 	    	
-	    	<%
-	    	t = tckt.getObject(request.getParameter("id"));
+	    	
+			
+		<% } %>
+			</div>
+			
+		<% if( request.getParameter("id") == null || "torles".equals(request.getParameter("akcio")) ) { %>
+			<div class="col_6 col">
+				<ul class="szuro_gombok">
+					<li><a href="index.jsp<% if (! miszerint.equals("idorend")) { %>?miszerint=<%= miszerint %><% } %>"<% if (szuro.equals("osszes")) { %> class="current"<% } %>>Összes</a></li>
+					<li><a href="index.jsp?szuro=aktiv<% if (! miszerint.equals("idorend")) { %>&miszerint=<%= miszerint %><% } %>"<% if (szuro.equals("aktiv")) { %> class="current"<% } %>>Aktív</a></li>
+					<li><a href="index.jsp?szuro=lezart<% if (! miszerint.equals("idorend")) { %>&miszerint=<%= miszerint %><% } %>"<% if (szuro.equals("lezart")) { %> class="current"<% } %>>Lezárt</a></li>
+				</ul>
+			</div>
+		<% } else { %>
+		
+			<%
+	    	Ticket t = tckt.getObject(request.getParameter("id"));
 	    	if( ! t.getCsatolmanyok().isEmpty() ) { %>
-	    	<div id="csatolmanyokDoboz">
+	    	<div class="col col_5" id="csatolmanyokDoboz">
+	    		<h3>Csatolmányok</h3>
 	    		<ul>
 	    			<% for(Object cs : t.getCsatolmanyok()) { %>
 					<li><a href="csatolmany.jsp?id=<%= ((Csatolmany)cs).getId() %>"><%= ((Csatolmany)cs).getCim() %></a>  <a href="index.jsp?id=<%= request.getParameter("id") %>&akcio=csatolmanytorles&csid=<%= ((Csatolmany)cs).getId() %>">Törlés</a></li>
@@ -207,19 +301,8 @@
 				</ul>
 	    	</div>
 	    	<% } %>
-			
+		
 		<% } %>
-			</div>
-			
-			<% if( request.getParameter("id") == null || "torles".equals(request.getParameter("akcio")) ) { %>
-			<div class="col_6 col">
-				<ul class="szuro_gombok">
-					<li><a href="index.jsp">Összes</a></li>
-					<li><a href="index.jsp?szuro=aktiv">Aktív</a></li>
-					<li><a href="index.jsp?szuro=lezart">Lezárt</a></li>
-				</ul>
-			</div>
-			<% } %>
 		</section>
 			
 	

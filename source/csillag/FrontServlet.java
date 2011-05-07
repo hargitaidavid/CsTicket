@@ -22,10 +22,10 @@ public class FrontServlet extends HttpServlet {
 	private static final long serialVersionUID = 4738558675008114342L;
 	public static final String HEADER = "<html>"+
         "<head>"+
-        "<title>Csillag Ticketkezelő</title>"+
+        "<title>Csillag Ticketkezelo</title>"+
         "</head>"+
         "<body bgcolor=\"white\">";
-    public static final String FOOTER = "<a href=\"index.jsp\">a ticketek listajahoz</a>"+
+    public static final String FOOTER = "<a href=\"index.jsp\">Tovabb a ticketek listajahoz...</a>"+
         "</body>"+
         "</html>";
 
@@ -172,7 +172,7 @@ public class FrontServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
 		out.println(HEADER);
-		out.println("<h1> 1. feladat </h1>");
+		out.println("<h1> Az alkalmazas inditasra kesz! </h1>");
 		
 		if (isEmptyDB()) {
 			initializeDB();

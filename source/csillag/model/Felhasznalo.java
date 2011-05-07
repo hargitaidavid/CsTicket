@@ -1,12 +1,11 @@
-/**
- * 
- */
 package csillag.model;
 
 import java.util.Set;
 
 /**
- * @author hargitaidavid
+ * Egy felhaszn‡l—t reprezent‡l— oszt‡ly.
+ * 
+ * @author Bogn‡r Szabolcs, Hargitai D‡vid
  *
  */
 public class Felhasznalo {

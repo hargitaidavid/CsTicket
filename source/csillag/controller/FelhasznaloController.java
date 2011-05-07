@@ -1,6 +1,3 @@
-/**
- * 
- */
 package csillag.controller;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,12 +5,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.hibernate.Session;
 
 import csillag.model.Felhasznalo;
-import csillag.model.Ticket;
 import csillag.util.HibernateUtil;
 
 /**
- * @author hargitaidavid
- *
+ * A felhasználókkal kapcsolatos kéréseket kiszolgáló osztály
+ *  
+ * @author Bognár Szabolcs, Hargitai Dávid
  */
 public class FelhasznaloController {
 

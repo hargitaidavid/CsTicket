@@ -1,12 +1,11 @@
-/**
- * 
- */
 package csillag.model;
 
 import java.util.*;
 
 /**
- * @author hargitaidavid
+ * Egy ticketet reprezent‡l— oszt‡ly.
+ * 
+ * @author Bogn‡r Szabolcs, Hargitai D‡vid
  *
  */
 public class Ticket {

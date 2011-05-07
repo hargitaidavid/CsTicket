@@ -1,6 +1,3 @@
-/**
- * 
- */
 package csillag.controller;
 
 import java.text.DateFormat;
@@ -16,13 +13,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.Session;
 
-import csillag.model.Felhasznalo;
 import csillag.model.Merfoldko;
 import csillag.model.Ticket;
 import csillag.util.HibernateUtil;
 
 /**
- * @author hargitaidavid
+ * A mérföldkövekkel kapcsolatos kéréseket kiszolgáló osztály.
+ * 
+ * @author Bognár Szabolcs, Hargitai Dávid
  *
  */
 public class MerfoldkoController {

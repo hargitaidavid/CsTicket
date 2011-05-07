@@ -20,6 +20,8 @@
 	    <!-- grid's will help you keep your website appealing to your users, view 52framework.com website for documentation -->
 	    <link rel="stylesheet" type="text/css" href="css/grid.css" media="screen" />
 	    
+	    <link rel="stylesheet" type="text/css" href="css/forms.css" media="screen" />
+	    
 		<link rel="stylesheet" href="css/stilusok.css" />
 		<link rel="stylesheet" href="css/tabs.css" />
 	</head>

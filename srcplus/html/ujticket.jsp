@@ -22,6 +22,8 @@
 	    <!-- grid's will help you keep your website appealing to your users, view 52framework.com website for documentation -->
 	    <link rel="stylesheet" type="text/css" href="css/grid.css" media="screen" />
 	    
+	    <link rel="stylesheet" type="text/css" href="css/forms.css" media="screen" />
+	    
 		<link rel="stylesheet" href="css/stilusok.css" />
 		<link rel="stylesheet" href="css/tabs.css" />
 	</head>
@@ -76,12 +78,7 @@
 	            		<label>Cím</label>
 	                	<input type="text" name="cim" required="required" class="box_shadow" />
 	            	</div>
-	            	
-	            	<div>
-	            		<label>Leírás</label>
-	                	<textarea name="leiras" required="required" class="box_shadow"></textarea>
-	            	</div>
-	            	
+	            		            	
 	            	<div>
 	            		<label>Fontosság</label>
 	            		<select name="fontossag">
@@ -91,6 +88,13 @@
 							<option value="<%= Ticket.RAER %>">Ráér</option>
 						</select>
 					</div>
+					
+	            	<div class="textarea">
+	            		<label>Leírás</label>
+	                	<textarea name="leiras" required="required" class="box_shadow"></textarea>
+	            	</div>
+	            	
+	            	<div class="clear"></div>
 					
 					<input type="submit" value="Létrehozás" />
 

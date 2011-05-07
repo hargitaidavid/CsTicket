@@ -1,16 +1,15 @@
-/**
- * 
- */
 package csillag.model;
 
 import java.sql.Blob;
 
 
 /**
- * @author hargitaidavid
+ * Egy ticketekhez kapcsolhat— csatolm‡nyf‡jlt reprezent‡l— oszt‡ly..
+ * 
+ * @author Bogn‡r Szabolcs, Hargitai D‡vid
  *
  */
-public class Csatolmany implements java.io.Serializable {
+public class Csatolmany {
 
 	private Long id;
 	private String cim;

@@ -1,25 +1,16 @@
-/**
- * 
- */
 package csillag.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.Session;
-
-import com.oreilly.servlet.multipart.FilePart;
-import com.oreilly.servlet.multipart.MultipartParser;
-import com.oreilly.servlet.multipart.ParamPart;
-import com.oreilly.servlet.multipart.Part;
 
 import csillag.model.Csatolmany;
 import csillag.model.Felhasznalo;
@@ -28,112 +19,112 @@ import csillag.model.Ticket;
 import csillag.util.HibernateUtil;
 
 /**
+ * A ticketekkel kapcsolatos kéréseket kiszolgáló osztály.
+ * 
  * @author Bognár Szabolcs, Hargitai Dávid
  *
  */
 public class TicketController {
 
-	public List getAllTickets()
-	{
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        
-		List osszesTicket = session.createQuery("from Ticket").list();
-		session.getTransaction().commit();
-		
-		return osszesTicket;
-	}
-	
-	public void addNewTicket(String cim, String leiras, byte fontossag)
-	{
-		Ticket T = new Ticket(cim, leiras, fontossag, Ticket.UJ, new Date());
-		
-		/*
-		 * ide esetleg be lehet venni az aktuális felhasználót, mint a tickethez rendelt
-		 * felelõst, meg esetleg külön megadni a mérföldkövet...
-		 */
-		
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        
-		session.beginTransaction();        
-		session.createQuery("insert into Ticket values ("+T+")");
-		session.getTransaction().commit();
-	}
-	
-	// idõrendben listáz
 	@SuppressWarnings("unchecked")
-	public List<Ticket> getSortedTickets()
+	public List<Ticket> getAllTickets(String szuro)
 	{
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         
-		List<Ticket> osszesTicket = session.createQuery("from Ticket order by letrehozva").list();
+		List<Ticket> osszesTicket;
+		if (szuro.equals("osszes")) osszesTicket = session.createQuery("from Ticket").list();
+		else if (szuro.equals("aktiv")) osszesTicket = session.createQuery("from Ticket where allapot in (:uj, :modositva)").setParameter("uj", Ticket.UJ).setParameter("modositva", Ticket.MODOSITVA).list();
+		else osszesTicket = session.createQuery("from Ticket where allapot in (:megoldva, :nemmegoldva, :torolve)").setParameter("megoldva", Ticket.MEGOLDVA).setParameter("nemmegoldva", Ticket.NEM_LESZ_MEGOLDVA).setParameter("torolve", Ticket.TOROLVE).list();
+		
 		session.getTransaction().commit();
 		
 		return osszesTicket;
 	}
 	
 	// adott felhasználó ticketjeit listázza ki
-	@SuppressWarnings("unchecked")
-	public List<Ticket> getTicketsByFelhasznalo(Felhasznalo f)
+	public Set<Ticket> getTicketsByFelhasznalo(Long fid, String szuro)
 	{
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         
-		List<Ticket> ticketek = session.createQuery("from Ticket where felelos="+f.getFelhasznalonev()).list();
-		session.getTransaction().commit();
+        Felhasznalo f = (Felhasznalo)session.load(Felhasznalo.class, fid);
+		Set<Ticket> ticketek = f.getTicketek();
+		Set<Ticket> szurtTicketek = new HashSet<Ticket>();
 		
-		return ticketek;
-	}
-	
-	// adott mérföldkõ alatti ticketeket listázza ki
-	@SuppressWarnings("unchecked")
-	public List<Ticket> getTicketsByMerfoldko(Merfoldko m)
-	{
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        
-		List<Ticket> ticketek = session.createQuery("from Ticket where merfoldko="+m.getNev()).list();
-		session.getTransaction().commit();
-		
-		return ticketek;
-	}
-	
-	// ha egy ticket állatota megváltozik
-	public void stateChanged(Ticket t, byte allapot)
-	{
-		t.setAllapot(allapot);
-	}
-	
-	// ha a ticket felelõse megváltozik
-	public void responseChanged(Ticket t, Felhasznalo felelos)
-	{
-		t.setFelelos(felelos);
-	}
-	
-	// ha a ticket másik mérföldkõ alá kerül
-	public void milestoneChanged(Ticket t, Merfoldko merfoldko)
-	{
-		t.setMerfoldko(merfoldko);
-	}
-	
-	// ha csatolás történik tickethez
-	public void attachmentsAdded(Ticket t, Set<Csatolmany> csatolmanyok)
-	{
-		t.setCsatolmanyok(csatolmanyok);
-	}
-	
-	// ha csatolás törlése történik ticketnél
-	public void attachmentsDeleted(Ticket t, Set<Csatolmany> csatolmanyok)
-	{
-		if(t.getCsatolmanyok().containsAll(csatolmanyok))
+		if ( ! szuro.equals("osszes") )
 		{
-			t.getCsatolmanyok().removeAll(csatolmanyok);
+			byte allapot;
+			Iterator<Ticket> i = ticketek.iterator();
+			while( i.hasNext() )
+			{
+				Ticket t = (Ticket)i.next();
+				allapot = t.getAllapot();
+				if (szuro.equals("aktiv"))
+				{
+					if (allapot == Ticket.UJ || allapot == Ticket.MODOSITVA)
+					{
+						szurtTicketek.add(t);
+					}
+				}
+				else if (szuro.equals("lezart"))
+				{
+					if (allapot == Ticket.MEGOLDVA ||
+						allapot == Ticket.NEM_LESZ_MEGOLDVA ||
+						allapot == Ticket.TOROLVE)
+					{
+						szurtTicketek.add(t);
+					}
+				}
+			}
+			
+			return szurtTicketek;
 		}
 		else
 		{
-			// ide talán valami kiíratás kellhetne... vagy úgyis mindegy; ha nem hajtódik végre, nem okoz bajt...
-			return;
+			return ticketek;
+		}
+	}
+	
+	// adott mérföldkõ alatti ticketeket listázza ki
+	public Set<Ticket> getTicketsByMerfoldko(Long mid, String szuro)
+	{
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        
+        Merfoldko m = (Merfoldko)session.load(Merfoldko.class, mid);
+		Set<Ticket> ticketek = m.getTicketek();
+		Set<Ticket> szurtTicketek = new HashSet<Ticket>();
+		
+		if ( ! szuro.equals("osszes") )
+		{
+			byte allapot;
+			Iterator<Ticket> i = ticketek.iterator();
+			while( i.hasNext() )
+			{
+				Ticket t = (Ticket)i.next();
+				allapot = t.getAllapot();
+				if (szuro.equals("aktiv"))
+				{
+					if (allapot != Ticket.UJ && allapot != Ticket.MODOSITVA)
+					{
+						szurtTicketek.remove(t);
+					}
+				}
+				else if (szuro.equals("lezart"))
+				{
+					if (allapot != Ticket.MEGOLDVA && allapot != Ticket.NEM_LESZ_MEGOLDVA && allapot != Ticket.TOROLVE)
+					{
+						szurtTicketek.remove(t);
+					}
+				}
+			}
+			
+			return szurtTicketek;
+		}
+		else
+		{
+			return ticketek;
 		}
 	}
 	
@@ -160,6 +151,7 @@ public class TicketController {
 		return t;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static List<Felhasznalo> getDolgozok()
 	{
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();

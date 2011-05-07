@@ -1,13 +1,12 @@
-/**
- * 
- */
 package csillag.model;
 
 import java.util.Date;
 import java.util.Set;
 
 /**
- * @author hargitaidavid
+ * Egy mérföldkövet reprezentáló osztály.
+ * 
+ * @author Bognár Szabolcs, Hargitai Dávid
  *
  */
 public class Merfoldko {

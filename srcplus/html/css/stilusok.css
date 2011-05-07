@@ -16,3 +16,22 @@ header nav ul li.last a {border-right:none;}
 h2 {border-bottom:1px dashed #ccc; margin-top:15px;}
 
 ul.szuro_gombok {list-style-type:none; margin-top:3em;}
+
+table tr.odd {background-color:#ddd; border-top:1px solid #999;}
+table td {padding:10px 1em;}
+
+div#csatolmanyokDoboz { margin-top:5em; }
+div.textarea { height:90px; }
+
+form div label {
+    float: left;
+    margin-right: 2em;
+    text-align: right;
+    width: 100px;
+}
+
+form div input { float: none; }
+
+form div textarea { height:100px; width:240px; }
+
+form fieldset input[type="submit"], form fieldset button { float:right; }

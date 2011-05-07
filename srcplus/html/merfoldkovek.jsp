@@ -20,8 +20,14 @@
 	    <!-- grid's will help you keep your website appealing to your users, view 52framework.com website for documentation -->
 	    <link rel="stylesheet" type="text/css" href="css/grid.css" media="screen" />
 	    
+	    <link rel="stylesheet" type="text/css" href="css/forms.css" media="screen" />
+	    
 		<link rel="stylesheet" href="css/stilusok.css" />
 		<link rel="stylesheet" href="css/tabs.css" />
+		
+		<link rel="stylesheet" type="text/css" href="css/anytimec.css" />
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/anytimec.js"></script>
 	</head>
 	
 	<body>
@@ -116,7 +122,11 @@
 				    	</div>
 				    	<div>
 				    		<label>Határidő ("yyyy-MM-dd")</label>
-				    	    <input type="text" name="hatarido" value="<%= mrfldk.getHatarido((Merfoldko)m, "yyyy-MM-dd") %>" required="required" class="box_shadow" />
+				    	    <input type="text" name="hatarido" id="hatarido" value="<%= mrfldk.getHatarido((Merfoldko)m, "yyyy-MM-dd") %>" required="required" class="box_shadow" />
+				    		<script type="text/javascript">
+								$("#hatarido").AnyTime_picker(
+							    { format: "%Y-%m-%d" } );
+							</script>
 				    	</div>
 
 				    	<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) >= Felhasznalo.MODERATOR ) { %>

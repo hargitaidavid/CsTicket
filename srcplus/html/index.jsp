@@ -39,6 +39,11 @@
 			tckt.delete(request);
 			response.sendRedirect("index.jsp");
 		}
+		else if( "csatolmanytorles".equals(request.getParameter("akcio")) )
+		{
+			tckt.deleteCsatolmanyt(request);
+			response.sendRedirect("index.jsp?id="+request.getParameter("id"));
+		}
 		else if( request.getParameter("cim") != null )
 		{
 			tckt.save(request);
@@ -169,11 +174,6 @@
 						</select>
 					</div>
 					
-					<div>
-						<label for="csatolmany">Csatolmány</label>
-						<input type="file" name="csatolmany" id="csatolmany">
-					</div>
-
 					<% if( session.getAttribute("jog") != null && Integer.parseInt(session.getAttribute("jog").toString()) >= Felhasznalo.MODERATOR ) { %>
 	            	<input type="submit" value="Mentés" />
 	            	<% } %>
@@ -184,13 +184,25 @@
 	        	</fieldset>
 	    	</form>
 	    	
+	    	<form class="col col_7" action="csatolmanymentes.jsp" method="post" enctype="multipart/form-data">
+	    		<fieldset>	
+	        		<input type="hidden" name="id" value="<%= request.getParameter("id") %>" />
+					<div>
+						<label for="csatolmany">Csatolmány</label>
+						<input type="file" name="csatolmany" id="csatolmany">
+						<input type="submit" value="Feltöltés" />
+					</div>
+
+	        	</fieldset>
+	    	</form>
+	    	
 	    	<%
 	    	t = tckt.getObject(request.getParameter("id"));
 	    	if( ! t.getCsatolmanyok().isEmpty() ) { %>
 	    	<div id="csatolmanyokDoboz">
 	    		<ul>
 	    			<% for(Object cs : t.getCsatolmanyok()) { %>
-					<li><a href="csatolmany.jsp?id=<%= ((Csatolmany)cs).getId() %>"><%= ((Csatolmany)cs).getCim() %></a> <a href="valahova">törlés</a></li>
+					<li><a href="csatolmany.jsp?id=<%= ((Csatolmany)cs).getId() %>"><%= ((Csatolmany)cs).getCim() %></a>  <a href="index.jsp?id=<%= request.getParameter("id") %>&akcio=csatolmanytorles&csid=<%= ((Csatolmany)cs).getId() %>">Törlés</a></li>
 					<% } %>
 				</ul>
 	    	</div>

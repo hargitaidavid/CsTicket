@@ -15,7 +15,10 @@ public class Csatolmany implements java.io.Serializable {
 	private Long id;
 	private String cim;
 	private Blob adat;
+	private Ticket tartalmazo;
 	
+
+
 	public Csatolmany() {}
 
 	public Long getId() {
@@ -42,6 +45,12 @@ public class Csatolmany implements java.io.Serializable {
 		this.adat = adat;
 	}
 
-	
+	public Ticket getTartalmazo() {
+		return tartalmazo;
+	}
+
+	public void setTartalmazo(Ticket tartalmazo) {
+		this.tartalmazo = tartalmazo;
+	}
 	
 }

@@ -3,7 +3,9 @@
  */
 package csillag.controller;
 
-import java.io.UnsupportedEncodingException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,6 +15,11 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.Session;
+
+import com.oreilly.servlet.multipart.FilePart;
+import com.oreilly.servlet.multipart.MultipartParser;
+import com.oreilly.servlet.multipart.ParamPart;
+import com.oreilly.servlet.multipart.Part;
 
 import csillag.model.Csatolmany;
 import csillag.model.Felhasznalo;
@@ -216,13 +223,6 @@ public class TicketController {
             	t.setMerfoldko(m);
             }
             
-            
-            if (r.getParameter("csatolmany") != null)
-            {
-            	Csatolmany cs = CsatolmanyController.mentes(r.getParameter("csatolmany"));
-            	t.getCsatolmanyok().add(cs);
-            }
-        	
         }
         
         session.getTransaction().commit();
@@ -234,7 +234,22 @@ public class TicketController {
         session.beginTransaction();
         
         Ticket t = (Ticket)session.load(Ticket.class, Long.valueOf(r.getParameter("id")));
+        
+        t.getCsatolmanyok().clear();
         session.delete(t);
+        
+        session.getTransaction().commit();
+	}
+	
+	public static void deleteCsatolmanyt(HttpServletRequest r)
+	{
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        
+        Ticket t = (Ticket)session.load(Ticket.class, Long.valueOf(r.getParameter("id")));
+        Csatolmany cs = (Csatolmany)session.load(Csatolmany.class, Long.valueOf(r.getParameter("csid")));
+        
+        t.getCsatolmanyok().remove(cs);
         
         session.getTransaction().commit();
 	}

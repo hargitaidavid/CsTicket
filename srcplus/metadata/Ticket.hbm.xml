@@ -18,8 +18,8 @@
         <many-to-one name="felelos" class="csillag.model.Felhasznalo" column="FELELOS_ID"/>
         <many-to-one name="merfoldko" class="csillag.model.Merfoldko" column="MERFOLDKAVICS_ID"/>
         
-        <set name="csatolmanyok" cascade="all">
-            <key column="CSATOLMANY_ID"/>
+        <set name="csatolmanyok" cascade="all-delete-orphan" inverse="true">
+            <key column="TARTALMAZO_ID"/>
             <one-to-many class="csillag.model.Csatolmany"/>
         </set>
     </class>
